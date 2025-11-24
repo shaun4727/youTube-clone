@@ -10,6 +10,7 @@ export const LoginForm = () => {
 					<Image width={32} height={32} src="/logo/logo.svg" alt="clone-logo" />
 					<p>YouTube Clone </p>
 				</div>
+				<h1 className="text-3xl">Sign UP</h1>
 			</Link>
 		</Card>
 	);
