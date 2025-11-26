@@ -1,31 +1,31 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import { auth } from '@/auth';
+import type { Metadata } from 'next';
+import { SessionProvider } from 'next-auth/react';
+import { Inter } from 'next/font/google';
+import './globals.css';
 
 const interFont = Inter({
-  variable: "--Inter",
-  subsets: ["latin"],
+	variable: '--Inter',
+	subsets: ['latin'],
 });
 
-
-
 export const metadata: Metadata = {
-  title: "Youtube Clone",
-  description: "Youtube Clone Project",
+	title: 'Youtube Clone',
+	description: 'Youtube Clone Project',
 };
 
-export default function RootLayout({
-  children,
+export default async function RootLayout({
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body
-        className={`${interFont.variable}`}
-      >
-        {children}
-      </body>
-    </html>
-  );
+	const session = await auth();
+
+	return (
+		<SessionProvider session={session}>
+			<html lang="en">
+				<body className={`${interFont.variable}`}>{children}</body>
+			</html>
+		</SessionProvider>
+	);
 }

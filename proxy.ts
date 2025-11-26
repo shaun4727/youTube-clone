@@ -18,7 +18,7 @@ export default auth((req) => {
 		if (isLoggedIn) {
 			return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
 		}
-		console.log('yes');
+
 		return NextResponse.next();
 	}
 

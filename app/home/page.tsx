@@ -8,7 +8,7 @@ const HomePage = () => {
 			<form
 				action={async (formData) => {
 					'use server';
-					await signOut({ redirectTo: '/sign-in' });
+					await signOut();
 				}}
 			>
 				<Button type="submit">Sign Out</Button>
