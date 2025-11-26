@@ -16,7 +16,7 @@ export const LoginForm = () => {
 			<form
 				action={async () => {
 					'use server';
-					await signIn('google');
+					await signIn('google', { redirectTo: '/home' });
 				}}
 			>
 				<Button className="text-3xl">Sign UP</Button>
