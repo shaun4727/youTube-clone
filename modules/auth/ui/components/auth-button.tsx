@@ -1,10 +1,19 @@
 'use client';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuGroup,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { signInToYoutube, signOutFromYoutube } from '@/lib/actions/loginLogoutActions';
 
-import { UserCircleIcon } from 'lucide-react';
+import { LogOut, Settings, UserCircleIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const AuthButton = () => {
@@ -17,8 +26,8 @@ const AuthButton = () => {
 
 	const logOutFunc = () => {
 		try {
-			setUser(undefined);
 			signOutFromYoutube();
+			setUser(undefined);
 		} catch (err) {
 			console.log('auth-button comp --', err);
 		}
@@ -27,9 +36,46 @@ const AuthButton = () => {
 	return (
 		<>
 			{user ? (
-				<Button type="submit" onClick={() => logOutFunc()}>
-					Sign Out
-				</Button>
+				<>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Avatar>
+								<AvatarImage src={user?.image as string} alt="profile" />
+								<AvatarFallback>Profile Image</AvatarFallback>
+							</Avatar>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end" className="w-auto">
+							<DropdownMenuGroup>
+								<DropdownMenuItem className="flex gap-2 text-regular-font-size p-[var(--regular-padding-left)]">
+									<div className="flex gap-2 ">
+										<Avatar>
+											<AvatarImage src={user?.image as string} alt="profile" />
+											<AvatarFallback>Profile Image</AvatarFallback>
+										</Avatar>
+										<div>
+											<h4 className="font-bold">{user?.name}</h4>
+											<p>{user?.email}</p>
+										</div>
+									</div>
+								</DropdownMenuItem>
+								<DropdownMenuItem className="flex gap-2 text-regular-font-size p-[var(--regular-padding-left)]">
+									<Settings className="w-[var(--regular-icon-size)] " />
+									Manage Account
+								</DropdownMenuItem>
+							</DropdownMenuGroup>
+							<DropdownMenuSeparator />
+							<DropdownMenuGroup>
+								<DropdownMenuItem
+									className="flex gap-2 text-regular-font-size p-[var(--regular-padding-left)]"
+									onClick={() => logOutFunc()}
+								>
+									<LogOut className="w-[var(--regular-icon-size)] " />
+									Sign out
+								</DropdownMenuItem>
+							</DropdownMenuGroup>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</>
 			) : (
 				<Button
 					variant="outline"
