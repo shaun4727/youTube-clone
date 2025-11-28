@@ -20,7 +20,7 @@
     -   (auth)/layout.tsx
     -   so far sign in functionality was added using google provider
     -   after sign in/logout user will be redirected to home page
-    -   subscription page should be allowed for registered user only
+    -   subscription and other pages should be allowed for registered user only ----
     -   on sign out redirect back to home page
 
 **Login Screen**
