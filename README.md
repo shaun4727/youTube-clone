@@ -189,3 +189,197 @@ export const GET = () => {
 	return new Response('hello');
 };
 ```
+
+## Chapter 6 | tRPC setup
+
+### What is tRPC? what is the use of this?
+
+tRPC (short for **TypeScript Remote Procedure Call**) is an open-source framework that allows you to **build end-to-end type-safe APIs** without the need for traditional code generation, schema definition languages (like GraphQL's SDL), or runtime validation (like REST with Swagger).
+
+It is not a database, nor is it a transfer protocol like HTTP or gRPC; it's a **developer tool** that simplifies and secures the process of calling functions across the network, specifically between a **TypeScript frontend** and a **TypeScript backend**.
+
+---
+
+#### 💡 How tRPC Works and Its Core Use
+
+The primary purpose of tRPC is to give developers a **seamless, single-language development experience** where API endpoints feel like local function calls.
+
+##### 1\. **Zero-Overhead Type Safety**
+
+This is the most significant use of tRPC.
+
+-   You define your API procedures (functions) and their input/output types **once** on the backend using TypeScript.
+-   tRPC automatically infers these types and exposes them to your frontend.
+-   When you call a backend procedure from your frontend, TypeScript immediately checks the arguments and the expected return data. If there is a mismatch, the **TypeScript compiler throws an error** during development (compile-time), not a runtime error when the code is running in production.
+
+This eliminates an entire class of bugs and reduces the need for constant context-switching between frontend and backend contracts.
+
+##### 2\. **Defining Procedures (The Backend)**
+
+On the backend (usually Node.js, Express, or Next.js), you define your API endpoints as plain TypeScript functions, using tRPC helpers to enforce input validation (often using Zod).
+
+-   **Example Backend Definition:**
+    ```typescript
+    // server.ts
+    const router = trpc.router().query('getUser', {
+    	input: z.object({ id: z.string() }), // Input validation
+    	resolve({ input }) {
+    		return db.users.findUnique({ where: { id: input.id } });
+    	},
+    });
+    ```
+
+##### 3\. **Consuming Procedures (The Frontend)**
+
+On the frontend (often a React application using the tRPC-React adapter), you call the procedure using a simple, typed hook.
+
+-   **Example Frontend Consumption:**
+    ```typescript
+    // client.tsx
+    // The type of 'data' is automatically inferred as the return type of 'getUser'
+    const { data } = trpc.getUser.useQuery({ id: '123' });
+    ```
+
+If you tried to call `trpc.getUser.useQuery({ user_id: 123 })` (using `user_id` instead of `id`, and a number instead of a string), **TypeScript would immediately alert you to the error**.
+
+#### 🎯 Benefits of Using tRPC
+
+| Feature                        | Benefit                                                                                                                                                |
+| :----------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Developer Experience**       | Writing an API feels like writing local functions, which speeds up development.                                                                        |
+| **No Build Step/CodeGen**      | Unlike GraphQL, tRPC doesn't require a separate code generation step to synchronize types. It uses TypeScript's native inference.                      |
+| **Automatic Input Validation** | Built-in support for Zod (or similar libraries) ensures input is validated _before_ the function logic runs.                                           |
+| **Smaller Bundle Size**        | Since you only fetch the procedures you use, client-side bundle size can be smaller compared to using an entire client library for a schema-first API. |
+
+Would you like to know which modern web frameworks (like Next.js or Nuxt) integrate well with tRPC?
+
+### what if don't use trpc? explain with example that will help me understand the difference in code using tRPC and not using tRPC?
+
+If you don't use tRPC, you would typically build your API using a traditional method like **REST** or **GraphQL**. The main consequence of not using tRPC is the **loss of automatic, end-to-end type safety** between your frontend and backend, which introduces friction and potential bugs.
+
+---
+
+#### 🆚 Code Comparison: REST vs. tRPC
+
+Let's look at a simple example: **fetching a user by ID** from a backend API.
+
+##### Scenario: Fetching a User
+
+| Feature                | REST API (No tRPC)                                     | tRPC API                                      |
+| :--------------------- | :----------------------------------------------------- | :-------------------------------------------- |
+| **Backend Technology** | Express, Koa, or Next.js API Routes                    | Node.js/Next.js with tRPC                     |
+| **Frontend Fetching**  | `fetch` or Axios                                       | tRPC Client/React Query Hook                  |
+| **Type Safety**        | **Manual** (Requires repeating types on both sides)    | **Automatic** (Types are inferred end-to-end) |
+| **Validation**         | Manual input validation (e.g., Joi, Express Validator) | Built-in using Zod or similar library         |
+
+---
+
+#### 1️⃣ Example without tRPC (Traditional REST)
+
+To maintain type safety, you have to manually define the types for the request body/parameters and the response data in **at least three places**.
+
+##### Backend Code (`server.ts`)
+
+The backend defines the endpoint and its logic. The types for `input` and `output` are often implicit or manually enforced.
+
+```typescript
+// Define the user data structure
+type User = { id: string; name: string; email: string };
+
+// 1. Backend defines the output type (User)
+app.get('/api/user/:id', (req, res) => {
+	const id = req.params.id; // Type is always 'string'
+
+	// ⛔️ MANUAL CHECK: What if 'id' isn't a valid format?
+	if (!id) return res.status(400).send('ID is required');
+
+	const user: User = db.findUser(id); // Assume this returns a User
+	return res.json(user);
+});
+```
+
+##### Frontend Code (`client.tsx`)
+
+The frontend must know the exact endpoint path and manually define the expected response type.
+
+```typescript
+// 2. Frontend must manually define the expected type (User)
+type User = { id: string; name: string; email: string };
+
+async function fetchUser(userId: string): Promise<User> {
+	// 3. The path '/api/user/' must be exactly correct.
+	const response = await fetch(`/api/user/${userId}`);
+
+	if (!response.ok) throw new Error('Failed to fetch user');
+
+	// 4. MANUAL ASSERTION: We assume the response structure matches 'User'
+	const data = await response.json();
+	return data as User;
+}
+```
+
+**The Danger:** If the backend changes `name` to `fullName`, the frontend code above will still compile but will **fail at runtime** when it receives a different data structure, leading to broken UI.
+
+---
+
+#### 2️⃣ Example with tRPC
+
+With tRPC, you define the procedure once, and the types are automatically shared across the entire stack.
+
+##### Backend Code (`server.ts`)
+
+The backend defines the procedure, and its input and output are strongly typed.
+
+```typescript
+// server.ts (The types are inferred and shared)
+import { z } from 'zod'; // Used for input validation
+
+const appRouter = trpc.router().query('getUser', {
+	// ✅ AUTOMATIC CHECK: Input is strongly typed and validated
+	input: z.object({ id: z.string().uuid() }), // Ensures ID is a valid UUID
+
+	resolve({ input }) {
+		// The type of 'input' is guaranteed to be { id: string }
+		const user = db.findUser(input.id);
+		// The return type (e.g., { id: string, name: string }) is inferred
+		return user;
+	},
+});
+
+export type AppRouter = typeof appRouter; // Exports the type definition
+```
+
+##### Frontend Code (`client.tsx`)
+
+The frontend imports the router's type and uses the tRPC client. The compiler ensures correctness at every step.
+
+```typescript
+// client.tsx
+// Assume 'trpc' is initialized with the AppRouter type
+
+function UserComponent() {
+	// 1. AUTOMATIC CHECK: If you pass a number, the TS compiler yells at you.
+	// 2. AUTOMATIC CHECK: 'data' is immediately typed as the return type of 'getUser'.
+	const { data } = trpc.getUser.useQuery({ id: 'valid-uuid-123' });
+
+	return (
+		<div>User: {data?.name}</div>
+		// 3. AUTOMATIC CHECK: If the backend changes 'name' to 'fullName',
+		//    'data?.name' immediately shows a **compile-time error**.
+	);
+}
+```
+
+##### Key Differences Summarized
+
+| Feature             | Traditional REST                                            | tRPC                                                         |
+| :------------------ | :---------------------------------------------------------- | :----------------------------------------------------------- |
+| **Type Source**     | Duplicated in `.d.ts` files or manually copied.             | **Single Source of Truth** (The backend router definition).  |
+| **Error Timing**    | **Runtime Errors** (The application breaks in the browser). | **Compile-Time Errors** (The code won't even build).         |
+| **Endpoint Naming** | Must manually keep track of paths like `/api/user/:id`.     | Uses **IntelliSense/autocompletion** (e.g., `trpc.getU...`). |
+| **Validation**      | Requires separate middleware.                               | Integrated into the procedure definition.                    |
+
+# React/Next JS things that has been used
+
+1. use suspense
+2. react-error-boundary ( a npm package)
