@@ -7,34 +7,15 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { FlameIcon, HomeIcon, PlaySquareIcon } from 'lucide-react';
+import { mainSectionItems } from '@/route';
 import Link from 'next/link';
-
-const items = [
-	{
-		title: 'Home',
-		url: '/',
-		icon: HomeIcon,
-	},
-	{
-		title: 'Subscription',
-		url: '/feed/subscription',
-		icon: PlaySquareIcon,
-		auth: true,
-	},
-	{
-		title: 'Trending',
-		url: '/feed/trending',
-		icon: FlameIcon,
-	},
-];
 
 export const MainSection = () => {
 	return (
 		<SidebarGroup>
 			<SidebarGroupContent>
 				<SidebarMenu>
-					{items.map((item) => (
+					{mainSectionItems.map((item) => (
 						<SidebarMenuItem key={item.title}>
 							<SidebarMenuButton tooltip={item.title} asChild isActive={false} onClick={() => {}}>
 								<Link href={item.url} className="flex items-center gap-4">

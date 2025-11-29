@@ -11,9 +11,10 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useCurrentUser } from '@/hooks/use-current-user';
-import { signInToYoutube, signOutFromYoutube } from '@/lib/actions/loginLogoutActions';
+import { signOutFromYoutube } from '@/lib/actions/loginLogoutActions';
 
 import { LogOut, Settings, UserCircleIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const AuthButton = () => {
@@ -77,13 +78,14 @@ const AuthButton = () => {
 					</DropdownMenu>
 				</>
 			) : (
-				<Button
-					variant="outline"
-					className="px-4 py-2 text-sm font-medium text-blue-500 hover:text-blue-500 border-blue-500/20 rounded-full shadow-none"
-					onClick={() => signInToYoutube('google')}
-				>
-					<UserCircleIcon /> Sign In
-				</Button>
+				<Link href="/sign-in">
+					<Button
+						variant="outline"
+						className="px-4 py-2 text-sm font-medium text-blue-500 hover:text-blue-500 border-blue-500/20 rounded-full shadow-none"
+					>
+						<UserCircleIcon /> Sign In
+					</Button>
+				</Link>
 			)}
 		</>
 	);

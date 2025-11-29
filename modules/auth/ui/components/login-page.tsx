@@ -1,5 +1,7 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
+import { signInToYoutube } from '@/lib/actions/loginLogoutActions';
 import Image from 'next/image';
 import { FaGoogle } from 'react-icons/fa';
 
@@ -15,7 +17,7 @@ export const LoginForm = () => {
 					</span>
 				</CardTitle>
 				<CardDescription className="text-center">Welcome back! Please Sign In to continue</CardDescription>
-				<Button variant="outline" className="w-full mt-[40px]">
+				<Button variant="outline" className="w-full mt-[40px]" onClick={() => signInToYoutube('google')}>
 					<FaGoogle />
 					Continue with Google
 				</Button>
