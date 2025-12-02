@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   start from ----- 3:46:00
+-   start from ----- 4:09:00
 
 # Steps
 
@@ -902,3 +902,58 @@ You create a simple table to track request counts and timestamps. This method is
 ### What I implemented
 
 -- skipped rate limiter
+
+## Chapter 8 | Video Categories
+
+### Seeding to database
+
+1. create script and prisma model
+2. run the script ---- pnpm path/seed-category.ts
+3. to run a script, install tsx
+4. in package.json --- "seed": "tsx scripts/seed-categories.ts" --- pnpm run seed
+5. seed file should import 'dotenv/config';
+
+```ts
+import 'dotenv/config';
+
+import prisma from '@/lib/db';
+
+const categoryNames = [
+	'Gaming',
+	'Music',
+	'Vlogs',
+	'Comedy',
+	'News & Politics',
+	'Entertainment',
+	'Science & Technology',
+	'Education',
+	'How-To & Style',
+	'Sports',
+	'Food & Cooking',
+	'Travel & Events',
+	'Pets & Animals',
+];
+
+async function main() {
+	console.log('Seeding categories...');
+
+	try {
+		const values = categoryNames.map((name) => ({
+			name,
+			description: `Videos related to ${name.toLowerCase()}`,
+		}));
+
+		await prisma.category.createMany({
+			data: values,
+			skipDuplicates: true, // ★ prevents unique constraint errors
+		});
+
+		console.log('Categories seeded successfully!');
+	} catch (err) {
+		console.error('Error seeding categories:', err);
+		process.exit(1);
+	}
+}
+
+main();
+```

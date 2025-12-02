@@ -42,7 +42,7 @@ const AuthButton = () => {
 						<DropdownMenuTrigger asChild>
 							<Avatar>
 								<AvatarImage src={user?.image as string} alt="profile" />
-								<AvatarFallback>Profile Image</AvatarFallback>
+								<AvatarFallback>Profile Image </AvatarFallback>
 							</Avatar>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-auto">
