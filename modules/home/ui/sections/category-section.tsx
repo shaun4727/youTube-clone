@@ -1,6 +1,7 @@
 'use client';
 
 import { FilterCarousel } from '@/components/filter-carousel';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface CategoriesSectionProps {
@@ -10,6 +11,7 @@ interface CategoriesSectionProps {
 export const CategoriesSection = ({ categoryId }: CategoriesSectionProps) => {
 	const [categories, setCategories] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+	const router = useRouter();
 
 	useEffect(() => {
 		async function load() {
@@ -32,14 +34,19 @@ export const CategoriesSection = ({ categoryId }: CategoriesSectionProps) => {
 		load();
 	}, []);
 
-	return (
-		<FilterCarousel
-			value={categoryId ?? null}
-			data={categories}
-			isLoading={isLoading}
-			onSelect={(v) => console.log('Selected:', v)}
-		/>
-	);
+	const onSelect = (value: string | null) => {
+		const url = new URL(window.location.href);
+
+		if (value) {
+			url.searchParams.set('categoryId', value);
+		} else {
+			url.searchParams.delete('categoryId');
+		}
+
+		router.push(url.toString());
+	};
+
+	return <FilterCarousel value={categoryId ?? null} data={categories} isLoading={isLoading} onSelect={onSelect} />;
 };
 
 // export const CategoriesSection = ({ categoryId }: CategoriesSectionProps) => {

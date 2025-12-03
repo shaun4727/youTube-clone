@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { cn } from '@/lib/utils';
+import { useEffect, useRef, useState } from 'react';
 import { Badge } from './ui/badge';
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from './ui/carousel';
+import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from './ui/carousel';
 
 interface FilterCarouselProps {
 	value?: string | null;
 	isLoading: boolean;
-	onSelect?: (value: string | null) => void;
+	onSelect: (value: string | null) => void;
 	data: {
 		value: string;
 		label: string;
@@ -16,6 +17,9 @@ interface FilterCarouselProps {
 
 export const FilterCarousel = ({ value, onSelect, data, isLoading }: FilterCarouselProps) => {
 	const contentRef = useRef<HTMLDivElement | null>(null);
+	const [api, setApi] = useState<CarouselApi>();
+	const [current, setCurrent] = useState(0);
+	const [count, setCount] = useState(0);
 
 	useEffect(() => {
 		const el = contentRef.current;
@@ -32,33 +36,61 @@ export const FilterCarousel = ({ value, onSelect, data, isLoading }: FilterCarou
 		return () => el.removeEventListener('wheel', onWheel);
 	}, []);
 
+	useEffect(() => {
+		if (!api) {
+			return;
+		}
+
+		setCount(api.scrollSnapList().length);
+		setCurrent(api.selectedScrollSnap() + 1);
+
+		api.on('select', () => {
+			setCurrent(api.selectedScrollSnap() + 1);
+		});
+	}, [api]);
+
 	return (
 		<div className="relative w-full">
-			<Carousel opts={{ align: 'start', dragFree: true }} className="w-full px-12">
+			{/* --------- left fade  */}
+			<div
+				className={cn(
+					'absolute left-12 top-0 bottom-0 w-12 z-10 bg-gradient-to-r from-white to-transparent pointer-events-none',
+					current === 1 && 'hidden',
+				)}
+			/>
+			<Carousel setApi={setApi} opts={{ align: 'start', dragFree: true }} className="w-full px-12">
 				<CarouselContent ref={contentRef} className="-ml-3 flex items-center  no-scrollbar snap-x">
 					{/* className="-ml-3 overflow-x-auto flex items-center  no-scrollbar snap-x" */}
-					<CarouselItem key="all" className="pl-3 basis-auto snap-start">
-						<Badge
-							variant={value === null ? 'default' : 'secondary'}
-							className="rounded-lg px-3 py-1 cursor-pointer whitespace-nowrap text-sm"
-						>
-							All
-						</Badge>
-					</CarouselItem>
 
-					{data?.map((item) => (
-						<CarouselItem key={item.value} className="pl-3 basis-auto snap-start">
+					{!isLoading && (
+						<CarouselItem onClick={() => onSelect?.(null)} key="all" className="pl-3 basis-auto snap-start">
 							<Badge
-								variant={value === item.value ? 'default' : 'secondary'}
+								variant={value === null ? 'default' : 'secondary'}
 								className="rounded-lg px-3 py-1 cursor-pointer whitespace-nowrap text-sm"
 							>
-								{item.label}
+								All
 							</Badge>
 						</CarouselItem>
-					))}
+					)}
+
+					{!isLoading &&
+						data?.map((item) => (
+							<CarouselItem
+								key={item.value}
+								className="pl-3 basis-auto snap-start"
+								onClick={() => onSelect(item.value)}
+							>
+								<Badge
+									variant={value === item.value ? 'default' : 'secondary'}
+									className="rounded-lg px-3 py-1 cursor-pointer whitespace-nowrap text-sm"
+								>
+									{item.label}
+								</Badge>
+							</CarouselItem>
+						))}
 
 					{isLoading &&
-						Array.from({ length: 5 }).map((_, i) => (
+						Array.from({ length: 14 }).map((_, i) => (
 							<CarouselItem
 								key={`skeleton-${i}`}
 								className="pl-3 basis-auto flex items-center snap-start"
@@ -71,6 +103,14 @@ export const FilterCarousel = ({ value, onSelect, data, isLoading }: FilterCarou
 				<CarouselPrevious className="left-0 z-20 pointer-events-auto" />
 				<CarouselNext className="right-0 z-20 pointer-events-auto" />
 			</Carousel>
+
+			{/* --------- right fade  */}
+			<div
+				className={cn(
+					'absolute right-12 top-0 bottom-0 w-12 z-10 bg-gradient-to-l from-white to-transparent pointer-events-none',
+					current === count && 'hidden',
+				)}
+			/>
 		</div>
 	);
 };
