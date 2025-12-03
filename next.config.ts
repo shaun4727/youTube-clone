@@ -6,12 +6,8 @@ const nextConfig: NextConfig = {
 		remotePatterns: [
 			{
 				protocol: 'https',
-				// You MUST replace this with the actual domain hosting your user images (e.g., Google, GitHub, etc.)
-				hostname: 'lh3.googleusercontent.com',
-				port: '',
-				pathname: '**',
+				hostname: '**',
 			},
-			// Add other external domains if necessary
 		],
 	},
 };

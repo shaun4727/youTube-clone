@@ -1,6 +1,6 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
 	DropdownMenu,
@@ -13,7 +13,8 @@ import {
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { signOutFromYoutube } from '@/lib/actions/loginLogoutActions';
 
-import { LogOut, Settings, UserCircleIcon } from 'lucide-react';
+import { ClapperboardIcon, LogOut, Settings, UserCircleIcon } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -34,6 +35,8 @@ const AuthButton = () => {
 		}
 	};
 
+	console.log(user?.image);
+
 	return (
 		<>
 			{user ? (
@@ -41,17 +44,27 @@ const AuthButton = () => {
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Avatar>
-								<AvatarImage src={user?.image as string} alt="profile" />
-								<AvatarFallback>Profile Image </AvatarFallback>
+								<Image
+									src={user?.image as string}
+									alt="profile"
+									width={32}
+									height={32}
+									className="rounded-full object-cover"
+								/>
 							</Avatar>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-auto">
 							<DropdownMenuGroup>
-								<DropdownMenuItem className="flex gap-2 text-regular-font-size p-[var(--regular-padding-left)]">
+								<DropdownMenuItem className="flex gap-2 text-regular-font-size p-[var(--regular-padding-left)] cursor-pointer">
 									<div className="flex gap-2 ">
 										<Avatar>
-											<AvatarImage src={user?.image as string} alt="profile" />
-											<AvatarFallback>Profile Image</AvatarFallback>
+											<Image
+												src={user?.image as string}
+												alt="profile"
+												width={32}
+												height={32}
+												className="rounded-full object-cover"
+											/>
 										</Avatar>
 										<div>
 											<h4 className="font-bold">{user?.name}</h4>
@@ -59,15 +72,24 @@ const AuthButton = () => {
 										</div>
 									</div>
 								</DropdownMenuItem>
-								<DropdownMenuItem className="flex gap-2 text-regular-font-size p-[var(--regular-padding-left)]">
+								<DropdownMenuItem className="flex gap-2 text-regular-font-size p-[var(--regular-padding-left)] cursor-pointer">
 									<Settings className="w-[var(--regular-icon-size)] " />
 									Manage Account
+								</DropdownMenuItem>
+								<DropdownMenuItem
+									className="flex gap-2 text-regular-font-size p-[var(--regular-padding-left)] cursor-pointer"
+									asChild
+								>
+									<Link href="/studio">
+										<ClapperboardIcon className="w-[var(--regular-icon-size)] " />
+										Studio
+									</Link>
 								</DropdownMenuItem>
 							</DropdownMenuGroup>
 							<DropdownMenuSeparator />
 							<DropdownMenuGroup>
 								<DropdownMenuItem
-									className="flex gap-2 text-regular-font-size p-[var(--regular-padding-left)]"
+									className="flex gap-2 text-regular-font-size p-[var(--regular-padding-left)] cursor-pointer"
 									onClick={() => logOutFunc()}
 								>
 									<LogOut className="w-[var(--regular-icon-size)] " />
