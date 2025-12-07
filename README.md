@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   start from ----- 4:09:00
+-   start from ----- 6:45:19
 
 # Steps
 
@@ -1084,3 +1084,35 @@ check doc
 ### Points
 
 -   `router.push()` is not the fastest way, we could use `router.prefetch`
+
+## Chapter 9 | Studio Layout
+
+## Chapter 10 | Studio videos
+
+-   see what create button in studio page does.
+
+## Chapter 11 | Infinite Loading
+
+-   `use-intersection-observer.ts` was created. (path => hooks-> use-intersection-observer.ts)
+-   infinite loading, load more button is depended on previous chapter suspense
+
+## Chapter 12 | Mux Integration
+
+### How mux uploader will work?
+
+-   modules > videos > server > procedure.ts
+
+it was created in chapter 10
+
+```ts
+// 6.49.26
+const upload = await mux.video.uploads.create({
+	new_asset_settings: {
+		passthrough: userId,
+		playback_policy: ['public'],
+	},
+	cors_origin: '*',
+});
+```
+
+continue from 5.55.00 - chapter 10

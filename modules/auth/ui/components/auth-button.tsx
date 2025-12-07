@@ -35,8 +35,6 @@ const AuthButton = () => {
 		}
 	};
 
-	console.log(user?.image);
-
 	return (
 		<>
 			{user ? (
