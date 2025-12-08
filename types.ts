@@ -1,1 +1,4 @@
-export type VideoType = { videos: { id: string; name: string; description: string }[] | null };
+export type VideoType = {
+	studioVideosWithLimit: { id: string; name: string; description: string }[];
+	hasNextPage: boolean;
+};

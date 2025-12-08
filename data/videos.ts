@@ -12,9 +12,18 @@ export const getStudioFiles = async (id: string) => {
 				name: true,
 				description: true,
 			},
-			take: DEFAULT_LIMIT,
+			take: DEFAULT_LIMIT + 1,
 		});
-		return studioVideos;
+
+		const hasNextPage = studioVideos.length > DEFAULT_LIMIT;
+
+		// Slice the array to return only the desired limit (5 documents)
+		const studioVideosWithLimit = studioVideos.slice(0, DEFAULT_LIMIT);
+
+		return {
+			studioVideosWithLimit,
+			hasNextPage,
+		};
 	} catch (e) {
 		console.log(e);
 		return null;

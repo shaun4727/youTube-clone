@@ -59,7 +59,7 @@ export const FilterCarousel = ({ value, onSelect, data, isLoading }: FilterCarou
 				)}
 			/>
 			<Carousel setApi={setApi} opts={{ align: 'start', dragFree: true }} className="w-full px-12">
-				<CarouselContent ref={contentRef} className="-ml-3 flex items-center  no-scrollbar snap-x">
+				<CarouselContent ref={contentRef} className="-ml-3 mb-3 flex items-center  no-scrollbar snap-x">
 					{/* className="-ml-3 overflow-x-auto flex items-center  no-scrollbar snap-x" */}
 
 					{!isLoading && (
@@ -100,8 +100,8 @@ export const FilterCarousel = ({ value, onSelect, data, isLoading }: FilterCarou
 						))}
 				</CarouselContent>
 
-				<CarouselPrevious className="left-0 z-20 pointer-events-auto" />
-				<CarouselNext className="right-0 z-20 pointer-events-auto" />
+				<CarouselPrevious className="left-0 top-4 z-20 pointer-events-auto" />
+				<CarouselNext className="right-0 top-4 z-20 pointer-events-auto" />
 			</Carousel>
 
 			{/* --------- right fade  */}
