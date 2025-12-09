@@ -18,12 +18,13 @@ export async function GET(req: Request) {
 	try {
 		const { searchParams } = new URL(req.url);
 		const id = searchParams.get('id');
+		const offset = searchParams.get('offset');
 
 		if (!id) {
 			return NextResponse.json({ error: 'Missing ID' }, { status: 400 });
 		}
 
-		const files = await getStudioFiles(id as string);
+		const files = await getStudioFiles(id as string, Number(offset));
 		return NextResponse.json(files, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ error: 'Failed to load categories' }, { status: 500 });

@@ -1,7 +1,8 @@
 import { DEFAULT_LIMIT } from '@/constants';
 import prisma from '@/lib/db';
+import { mux } from '@/lib/mux';
 
-export const getStudioFiles = async (id: string) => {
+export const getStudioFiles = async (id: string, offset: number = 0) => {
 	try {
 		const studioVideos = await prisma.video.findMany({
 			where: {
@@ -13,6 +14,7 @@ export const getStudioFiles = async (id: string) => {
 				description: true,
 			},
 			take: DEFAULT_LIMIT + 1,
+			skip: offset,
 		});
 
 		const hasNextPage = studioVideos.length > DEFAULT_LIMIT;
@@ -39,14 +41,26 @@ export const createStudioVideo = async (videoData: {
 	name: string;
 	description: string;
 	userId: string;
+	muxStatus: string;
+	muxUploadId: string;
 	categoryId?: string; // Optional field
 }) => {
 	try {
+		const upload = await mux.video.uploads.create({
+			new_asset_settings: {
+				passthrough: videoData.userId,
+				playback_policy: ['public'],
+			},
+			cors_origin: '*',
+		});
+
 		const newVideo = await prisma.video.create({
 			data: {
 				name: videoData.name,
 				description: videoData.description,
 				userId: videoData.userId,
+				muxStatus: 'waiting',
+				muxUploadId: upload.id,
 				// Only include categoryId if it's provided
 				...(videoData.categoryId && { categoryId: videoData.categoryId }),
 			},
@@ -59,7 +73,7 @@ export const createStudioVideo = async (videoData: {
 		});
 
 		// The 'newVideo' object will contain the created data, including the auto-generated 'id' and 'createdAt'.
-		return newVideo;
+		return { video: newVideo, url: upload.url };
 	} catch (e) {
 		// Log the error for debugging purposes
 		console.error('Error creating new video:', e);

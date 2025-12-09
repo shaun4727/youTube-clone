@@ -1115,4 +1115,4 @@ const upload = await mux.video.uploads.create({
 });
 ```
 
-continue from 5.55.00 - chapter 10
+continue from 6.45.00 - chapter 10

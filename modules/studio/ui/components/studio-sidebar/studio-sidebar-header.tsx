@@ -1,7 +1,7 @@
 import { SidebarHeader, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UserAvatar } from '@/components/user-avatar';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -31,11 +31,11 @@ export const StudioSidebarHeader = () => {
 			<SidebarMenuItem>
 				<SidebarMenuButton tooltip="Your profile" asChild>
 					<Link href="/users/current">
-						<UserAvatar
+						{/* <UserAvatar
 							imageUrl={user?.image || ('' as string)}
 							name={user?.name ?? ('User' as string)}
 							size="sm"
-						/>
+						/> */}
 					</Link>
 				</SidebarMenuButton>
 			</SidebarMenuItem>
@@ -45,11 +45,16 @@ export const StudioSidebarHeader = () => {
 	return (
 		<SidebarHeader className="flex items-center justify-center pb-4">
 			<Link href="/users/current">
-				<UserAvatar
-					imageUrl={user?.image ?? ('' as string)}
-					name={user?.name ?? ('User' as string)}
-					className="size-28 hover:opacity-80 transition-opacity"
-				/>
+				{user && user.image && (
+					<Image
+						src={user.image}
+						alt="avatar"
+						width="110"
+						height="110"
+						loading="eager"
+						className="rounded-full aspect-square hover:opacity-80 transition-opacity"
+					/>
+				)}
 			</Link>
 			<div>
 				<p className="text-sm font-medium">Your profile</p>

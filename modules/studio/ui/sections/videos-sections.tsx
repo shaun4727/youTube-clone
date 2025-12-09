@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 export const VideosSection = () => {
 	const [loadingState, setLoadingState] = useState<boolean>(false);
 	const [studioVid, setStudioVid] = useState<VideoType>({ studioVideosWithLimit: [], hasNextPage: false });
+	const [offset, setOffset] = useState<number>(-1);
 	// const timerRef = useRef<NodeJS.Timeout>(undefined);
 
 	const router = useRouter();
@@ -18,14 +19,25 @@ export const VideosSection = () => {
 	const getVideoFunc = async () => {
 		try {
 			setLoadingState(true);
-			const res = await fetch(`/api/videos?id=${data?.id}`, {
+
+			setOffset(offset + 1);
+			const count = (offset + 1) * 6;
+			const res = await fetch(`/api/videos?id=${data?.id}&offset=${count}`, {
 				method: 'GET',
 			});
 			setLoadingState(false);
 
 			const result = await res.json();
-			console.log(result);
-			setStudioVid(result);
+			setStudioVid((prevRes) => {
+				if (!prevRes.studioVideosWithLimit.length) {
+					return result;
+				}
+
+				return {
+					studioVideosWithLimit: [...prevRes.studioVideosWithLimit, ...result.studioVideosWithLimit],
+					hasNextPage: prevRes.hasNextPage,
+				};
+			});
 		} catch (err) {
 			console.log(err);
 		}
