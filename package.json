@@ -7,6 +7,8 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "eslint",
+		"dev:webhook": "ngrok http 3000",
+		"dev:all": "concurrently \"pnpm run dev\" \"pnpm run dev:webhook\"",
 		"seed": "tsx scripts/seed-categories.ts"
 	},
 	"dependencies": {
@@ -45,6 +47,7 @@
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",
+		"concurrently": "9.1.2",
 		"date-fns": "^4.1.0",
 		"dotenv": "^17.2.3",
 		"embla-carousel-react": "^8.6.0",
