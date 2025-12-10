@@ -81,11 +81,11 @@ model Video{
     name String @db.Text
     description String @db.Text
     muxStatus String @default("waiting")
-    muxAssetId String @unique @db.Text
+    muxAssetId String? @unique @db.Text
     muxUploadId String @unique @db.Text
-    muxPlaybackId String @unique @db.Text
-    muxTrackId String @unique @db.Text
-    muxTrackStatus String @db.Text
+    muxPlaybackId String? @unique @db.Text
+    muxTrackId String? @unique @db.Text
+    muxTrackStatus String? @db.Text
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 

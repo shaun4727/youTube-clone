@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "videos" ALTER COLUMN "muxAssetId" DROP NOT NULL,
+ALTER COLUMN "muxPlaybackId" DROP NOT NULL,
+ALTER COLUMN "muxTrackId" DROP NOT NULL,
+ALTER COLUMN "muxTrackStatus" DROP NOT NULL;

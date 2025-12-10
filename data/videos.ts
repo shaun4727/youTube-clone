@@ -62,7 +62,7 @@ export const createStudioVideo = async (videoData: {
 				muxStatus: 'waiting',
 				muxUploadId: upload.id,
 				// Only include categoryId if it's provided
-				...(videoData.categoryId && { categoryId: videoData.categoryId }),
+				...(videoData.categoryId && { categoryId: String(videoData.categoryId) ?? undefined }),
 			},
 			// Optionally, you can select which fields to return
 			select: {
@@ -77,6 +77,31 @@ export const createStudioVideo = async (videoData: {
 	} catch (e) {
 		// Log the error for debugging purposes
 		console.error('Error creating new video:', e);
+		return null;
+	}
+};
+
+export const updateVideoSchema = async (videoIdToUpdate: string, newMuxAssetId: string, muxStatus: string) => {
+	try {
+		const updatedVideo = await prisma.video.update({
+			where: {
+				id: videoIdToUpdate,
+			},
+			data: {
+				muxAssetId: newMuxAssetId,
+				muxStatus: muxStatus,
+			},
+			select: {
+				id: true,
+				name: true,
+				muxAssetId: true,
+				muxStatus: true,
+			},
+		});
+
+		return updatedVideo;
+	} catch (err) {
+		console.error('Error in updating video schema', err);
 		return null;
 	}
 };

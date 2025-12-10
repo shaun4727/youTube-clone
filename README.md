@@ -1115,4 +1115,22 @@ const upload = await mux.video.uploads.create({
 });
 ```
 
-continue from 6.45.00 - chapter 10
+### mux integration steps:
+
+-   **From Chat GPT**
+
+1. create a route to store video information and upload asset id in prisma database
+2. hit on route api that you created at step 1 and upload file to mux
+3. create a route to update stored information of video with muxPlaybackId, status, thumbnail url if needed
+
+-   **From Tutorial**
+
+1. create a procedure file which upload video and stores video information in prisma. it will also return upload url
+2. from `studio-upload-modal.tsx` file create video. pass upload url which is retrieved from step 1 to `StudioUploader.tsx` as endpoint props
+3. created new webhook in mux with `public-url-from-ngork/api/videos/webhook`. then copy webhook secret and paste it in .env file
+4. created /api/videos/webhook/route.ts, and update database information of mux asset id and mux status, verify signature
+5. `StudioUploader.tsx` file should be updated with endpoint
+
+**Mux Integration**
+
+-   start from 6:45:00
