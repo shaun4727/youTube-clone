@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   start from ----- 6:45:19
+-   start from ----- 7:19:00
 
 # Steps
 
@@ -1133,4 +1133,10 @@ const upload = await mux.video.uploads.create({
 
 **Mux Integration**
 
--   start from 6:45:00
+#### Steps that I followed
+
+1. app/(studio)/studio/layout.tsx
+2. modules/studio/ui/studio-layout.tsx -> modules/studio/ui/components/studio-navbar/index.tsx -> modules/studio/ui/components/studio-upload-modal.tsx -> /app/api/videos/route.ts (createStudioVideo)
+3. /data/videos.ts (inside createStudioVideo()) --- inside this function video saving functionality has been added
+
+-   start from 7:19:00

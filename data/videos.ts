@@ -59,7 +59,7 @@ export const createStudioVideo = async (videoData: {
 				name: videoData.name,
 				description: videoData.description,
 				userId: videoData.userId,
-				muxStatus: 'waiting',
+				muxStatus: 'pending',
 				muxUploadId: upload.id,
 				// Only include categoryId if it's provided
 				...(videoData.categoryId && { categoryId: String(videoData.categoryId) ?? undefined }),
@@ -85,7 +85,7 @@ export const updateVideoSchema = async (videoIdToUpdate: string, newMuxAssetId: 
 	try {
 		const updatedVideo = await prisma.video.update({
 			where: {
-				id: videoIdToUpdate,
+				muxUploadId: videoIdToUpdate,
 			},
 			data: {
 				muxAssetId: newMuxAssetId,

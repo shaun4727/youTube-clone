@@ -82,7 +82,7 @@ model Video{
     description String @db.Text
     muxStatus String @default("waiting")
     muxAssetId String? @unique @db.Text
-    muxUploadId String @unique @db.Text
+    muxUploadId String? @unique @db.Text
     muxPlaybackId String? @unique @db.Text
     muxTrackId String? @unique @db.Text
     muxTrackStatus String? @db.Text

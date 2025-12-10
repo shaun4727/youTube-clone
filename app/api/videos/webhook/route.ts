@@ -35,14 +35,12 @@ export const POST = async (request: Request) => {
 	mux.webhooks.verifySignature(body, { 'mux-signature': muxSignature }, SIGNING_SECRET);
 
 	switch (payload.type as WebhookEvent['type']) {
-		case 'video.asset.created': {
+		case 'video.asset.ready': {
 			const data = payload.data as VideoAssetCreatedWebhookEvent['data'];
 
 			if (!data.upload_id) {
 				return new Response('No upload ID found', { status: 400 });
 			}
-
-			console.log('upload id ', data);
 
 			await updateVideoSchema(data.upload_id, data.id, data.status);
 			break;
