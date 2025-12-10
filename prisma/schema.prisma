@@ -51,6 +51,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  videos        Video[]
 
   @@map("users")
 }
@@ -63,3 +64,34 @@ model VerificationToken {
   @@unique([identifier, token])
   @@map("verification_tokens")
 }
+
+model Category{
+    id   String    @id @default(cuid())
+    name String
+    description String @db.Text
+    videos   Video[]
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("categories")
+}
+
+model Video{
+    id   String    @id @default(cuid())
+    name String @db.Text
+    description String @db.Text
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // Foreign key to User
+    userId String
+    categoryId String?
+
+    //Relationship field to User model
+    user User @relation(fields: [userId], references: [id],onDelete: Cascade)
+    category Category? @relation(fields: [categoryId], references: [id],onDelete: SetNull)
+
+    @@map("videos")
+}
+
+

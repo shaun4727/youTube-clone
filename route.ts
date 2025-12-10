@@ -61,4 +61,5 @@ export const protectedRoutes = [
 			return item.url;
 		}),
 	,
+	'/studio',
 ];
