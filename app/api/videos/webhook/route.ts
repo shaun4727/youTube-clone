@@ -35,7 +35,7 @@ export const POST = async (request: Request) => {
 	mux.webhooks.verifySignature(body, { 'mux-signature': muxSignature }, SIGNING_SECRET);
 
 	switch (payload.type as WebhookEvent['type']) {
-		case 'video.asset.ready': {
+		case 'video.asset.created': {
 			const data = payload.data as VideoAssetCreatedWebhookEvent['data'];
 
 			if (!data.upload_id) {
