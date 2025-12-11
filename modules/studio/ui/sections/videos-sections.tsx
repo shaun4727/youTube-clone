@@ -3,7 +3,11 @@
 import { InfiniteScroll } from '@/components/infinite-scroll';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import { snakeCaseToTitle } from '@/lib/utils';
+import { VideoThumbnail } from '@/modules/videos/ui/components/video-thumbnail';
 import { VideoType } from '@/types';
+import { format } from 'date-fns';
+import { Globe2Icon, LockIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -21,7 +25,7 @@ export const VideosSection = () => {
 			setLoadingState(true);
 
 			setOffset(offset + 1);
-			const count = (offset + 1) * 6;
+			const count = (offset + 1) * 5;
 			const res = await fetch(`/api/videos?id=${data?.id}&offset=${count}`, {
 				method: 'GET',
 			});
@@ -99,13 +103,44 @@ export const VideosSection = () => {
 								className="cursor-pointer"
 								onClick={() => router.push(`/studio/videos/1`)}
 							>
-								<TableCell>{item.id}</TableCell>
-								<TableCell>Static Video</TableCell>
-								<TableCell>static Visibility</TableCell>
-								<TableCell>Static Date</TableCell>
-								<TableCell className="text-center pl-6">Static Views</TableCell>
-								<TableCell className="text-center pl-6">Static Comments</TableCell>
-								<TableCell className="text-center pl-6">Static Likes</TableCell>
+								<TableCell>
+									<div className="flex items-center gap-4">
+										<div className="relative aspect-video w-36 shrink-0">
+											<VideoThumbnail
+												imageUrl={item.thumbnailUrl}
+												previewUrl={item.previewUrl}
+												title={item.name}
+												duration={item.duration}
+											/>
+										</div>
+										<div className="flex flex-col overflow-hidden gap-y-1">
+											{/* The Tailwind CSS utility class line-clamp-1 is used to truncate (cut off) multi-line text after the first line and then display an ellipsis (...) at the end of that line, indicating that there is more content hidden. */}
+											<span className="text-sm line-clamp-1">{item.name}</span>
+											<span className="text-xs text-muted-foreground line-clamp-1">
+												{item.description || 'No description'}
+											</span>
+										</div>
+									</div>
+								</TableCell>
+								<TableCell>
+									<div className="flex items-center">
+										{item.visibility === 'PRIVATE' ? (
+											<LockIcon className="size-4 mr-2" />
+										) : (
+											<Globe2Icon className="size-4 mr-2" />
+										)}
+										{snakeCaseToTitle(item.visibility)}
+									</div>
+								</TableCell>
+								<TableCell>
+									<div className="flex items-center">{snakeCaseToTitle(item.muxStatus)}</div>
+								</TableCell>
+								<TableCell className="text-sm truncate">
+									{format(new Date(item.createdAt), 'd MMM yyyy')}
+								</TableCell>
+								<TableCell className="text-center pl-6">Views</TableCell>
+								<TableCell className="text-center pl-6">Comments</TableCell>
+								<TableCell className="text-center pl-6">Likes</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

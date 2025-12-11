@@ -76,6 +76,11 @@ model Category{
     @@map("categories")
 }
 
+enum VideoVisibility{
+    PUBLIC
+    PRIVATE
+}
+
 model Video{
     id   String    @id @default(cuid())
     name String @db.Text
@@ -86,8 +91,12 @@ model Video{
     muxPlaybackId String? @unique @db.Text
     muxTrackId String? @unique @db.Text
     muxTrackStatus String? @db.Text
+    thumbnailUrl String? 
+    previewUrl String? 
+    duration Int @default(0)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    visibility VideoVisibility @default(PRIVATE)
 
     // Foreign key to User
     userId String

@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   start from ----- 7:22:00
+-   start from ----- 7:37:00
 
 # Steps
 
@@ -1140,3 +1140,172 @@ const upload = await mux.video.uploads.create({
 3. /data/videos.ts (inside createStudioVideo()) --- inside this function video saving functionality has been added
 
 ## Chapter 13 | Mux Webhooks
+
+-   To define a dynamic update query like
+
+```js
+export const updateVideoSchemaOnReady = async ({
+	whereField,
+	data,
+	selectFields,
+}: {
+	whereField: { key: VideoUniqueField; value: any };
+	data: Prisma.VideoUpdateInput;
+	selectFields?: Prisma.VideoSelect;
+}) => {
+	try {
+		// Build dynamic where object
+		const where: Prisma.VideoWhereUniqueInput = {
+			[whereField.key]: whereField.value,
+		} as Prisma.VideoWhereUniqueInput;
+
+		const updatedVideo = await prisma.video.update({
+			where,
+			data,
+			select: selectFields,
+		});
+
+		return updatedVideo;
+	} catch (err) {
+		console.log(err);
+		throw err;
+	}
+};
+```
+
+follow prisma rules given below -
+
+Yes — **exactly.**
+Prisma follows a predictable naming pattern.
+
+---
+
+### ✅ **How Prisma Generates Types**
+
+For any model named:
+
+```
+model Video { ... }
+```
+
+Prisma automatically generates:
+
+| Purpose                | Type Name                      |
+| ---------------------- | ------------------------------ |
+| Unique lookup fields   | `Prisma.VideoWhereUniqueInput` |
+| Filtering (non-unique) | `Prisma.VideoWhereInput`       |
+| Create                 | `Prisma.VideoCreateInput`      |
+| Update                 | `Prisma.VideoUpdateInput`      |
+| Select                 | `Prisma.VideoSelect`           |
+| Include                | `Prisma.VideoInclude`          |
+
+So your assumption is correct.
+
+---
+
+### 📌 For `User` model
+
+If you have:
+
+```
+model User {
+  id String @id
+  email String @unique
+  username String @unique
+}
+```
+
+Then Prisma will generate:
+
+-   `Prisma.UserWhereUniqueInput`
+-   `Prisma.UserWhereInput`
+-   `Prisma.UserCreateInput`
+-   `Prisma.UserUpdateInput`
+-   `Prisma.UserSelect`
+-   `Prisma.UserInclude`
+
+---
+
+### 🔍 How to Know What Fields Are Unique?
+
+Look at your model:
+
+```prisma
+model Video {
+  id            String    @id
+  muxAssetId    String?   @unique
+  muxUploadId   String?   @unique
+  muxPlaybackId String?   @unique
+  muxTrackId    String?   @unique
+}
+```
+
+This creates:
+
+```ts
+type VideoWhereUniqueInput = {
+	id?: string;
+	muxAssetId?: string;
+	muxUploadId?: string;
+	muxPlaybackId?: string;
+	muxTrackId?: string;
+};
+```
+
+So your function correctly derives keys:
+
+```ts
+type VideoUniqueField = keyof Prisma.VideoWhereUniqueInput;
+
+// Equivalent to:
+// "id" | "muxAssetId" | "muxUploadId" | "muxPlaybackId" | "muxTrackId"
+```
+
+---
+
+### 🧩 For ANY other model
+
+##### Example: For `User`
+
+```ts
+type UserUniqueField = keyof Prisma.UserWhereUniqueInput;
+```
+
+##### Example: For `Category`
+
+```ts
+type CategoryUniqueField = keyof Prisma.CategoryWhereUniqueInput;
+```
+
+---
+
+### 🧠 **General Rule (easy to remember)**
+
+If your model is named:
+
+```
+model X { ... }
+```
+
+Your Prisma types will always be:
+
+```
+Prisma.XWhereUniqueInput
+Prisma.XWhereInput
+Prisma.XCreateInput
+Prisma.XUpdateInput
+Prisma.XSelect
+```
+
+---
+
+### 👉 Want me to generate a **generic update function** that works for ANY Prisma model with full type safety?
+
+Example:
+
+```ts
+await updateByUnique('video', 'id', '123', { status: 'ready' });
+await updateByUnique('user', 'email', 'test@test.com', { name: 'Shaun' });
+```
+
+Just say **“yes make it generic”**.

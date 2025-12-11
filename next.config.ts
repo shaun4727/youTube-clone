@@ -2,7 +2,13 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
 	/* config options here */
-	reactStrictMode: false,
+
+	/**
+	 * reactStrictMode:false
+	 * this line will disable reload two times
+	 *
+	 */
+	reactStrictMode: true,
 	images: {
 		remotePatterns: [
 			{
