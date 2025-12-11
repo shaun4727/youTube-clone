@@ -188,3 +188,31 @@ export const deleteVideoSchemaOnReady = async ({
 		throw err;
 	}
 };
+
+export const getSingleVideo = async (id: string) => {
+	try {
+		const studioVideo = await prisma.video.findUnique({
+			where: {
+				id: id,
+			},
+			select: {
+				id: true,
+				name: true,
+				description: true,
+				thumbnailUrl: true,
+				duration: true,
+				previewUrl: true,
+				muxStatus: true,
+				createdAt: true,
+				visibility: true,
+			},
+		});
+
+		return {
+			studioVideo,
+		};
+	} catch (e) {
+		console.log(e);
+		return null;
+	}
+};

@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   start from ----- 7:37:00
+-   start from ----- 8:28:00
 
 # Steps
 
@@ -1309,3 +1309,289 @@ await updateByUnique('user', 'email', 'test@test.com', { name: 'Shaun' });
 ```
 
 Just say **“yes make it generic”**.
+
+## Chapter 14 | Video Form
+
+got userId from user, id from input. get video from videos schema videos.id == id and videos.userId
+
+### will suspense work here according to next js 16?
+
+```jsx
+import { VideoView } from '@/modules/studio/ui/view/video-view';
+import { Suspense } from 'react';
+
+export const dynamic = 'force-dynamic';
+
+interface PageProps {
+	params: Promise<{ videoId: string }>;
+}
+
+const page = async ({ params }: PageProps) => {
+	const { videoId } = await params;
+	return (
+		<div>
+			<Suspense fallback={<p>Loading in suspense....</p>}>
+				<VideoView videoId={videoId} />
+			</Suspense>
+		</div>
+	);
+};
+
+export default page;
+
+import { FormSection } from '../sections/form-section';
+
+interface PageProps {
+	videoId: string;
+}
+
+export const VideoView = ({ videoId }: PageProps) => {
+	return (
+		<div className="px-4 pt-2.5 max-w-5xl">
+			<FormSection videoId={videoId} />
+		</div>
+	);
+};
+
+('use client');
+
+import { SingleVideoType } from '@/types';
+import { useEffect, useState } from 'react';
+
+interface FormSectionProps {
+	videoId: string;
+}
+
+export const FormSection = ({ videoId }: FormSectionProps) => {
+	const [singleVideo, setSingleVideo] = (useState < SingleVideoType) | (undefined > undefined);
+
+	const getVideoByIDFunc = async () => {
+		try {
+			const res = await fetch(`/api/video?id=${videoId}`, {
+				method: 'GET',
+			});
+
+			const result = await res.json();
+
+			setSingleVideo(result);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	useEffect(() => {
+		getVideoByIDFunc();
+	}, []);
+
+	return <>{JSON.stringify(singleVideo)}</>;
+};
+```
+
+---
+
+This is a very insightful question about how Suspense interacts with Client Components and data fetching in the Next.js App Router (which uses React 18, and Next.js 14, not 16, as of the current major stable version).
+
+The short answer is: **No, the `<Suspense>` boundary will not work as intended for the `FormSection` component's data fetching in this exact setup.**
+
+Here is a breakdown of why, and how you need to modify the code for Suspense to be effective.
+
+---
+
+#### 1\. Why Suspense Won't Work Here
+
+The `<Suspense>` component works by catching a Promise that is **thrown** during the rendering process of a component below it.
+
+In your current structure:
+
+1.  **`page.tsx` (Server Component):** Renders the `<Suspense>` boundary and the `<VideoView />`. This part is correct.
+2.  **`VideoView.tsx` (Server Component):** Renders the `<FormSection />`. This is also correct.
+3.  **`FormSection.tsx` (Client Component):**
+    -   It renders **immediately** on the client.
+    -   The data fetching (`getVideoByIDFunc`) is triggered inside the `useEffect` hook.
+    -   The `useEffect` hook runs **after** the initial render and component hydration.
+    -   **Crucially, the `useEffect` hook cannot throw a Promise that React can catch.** It's outside the main render cycle.
+    -   Therefore, the `<Suspense fallback>` is immediately replaced by the client component, which then enters a loading state (`useState`) _internally_ while the fetch occurs.
+
+Your application flow will be: **Server Render $\rightarrow$ Fallback shown briefly (for network delay) $\rightarrow$ Client takes over and shows `FormSection`'s initial content (e.g., `null` or empty state) $\rightarrow$ `useEffect` runs $\rightarrow$ Data loads $\rightarrow$ `FormSection` updates.**
+
+The fallback text `"Loading in suspense...."` will likely _not_ be visible while the API call is in progress.
+
+#### 2\. The Solution: Move Data Fetching to the Server
+
+The idiomatic way to use Suspense in Next.js App Router is to move the asynchronous data fetching into a **Server Component** and let React automatically handle the Suspense boundary.
+
+##### **Step 1: Modify `VideoView` to Fetch Data (Server Component)**
+
+Make the `VideoView` component `async` and perform the fetch there. Since it runs on the server, you can directly hit your API handler or, better yet, call a server-side data access function (like a Prisma query).
+
+**`/modules/studio/ui/view/video-view.tsx` (New, Simplified, Async)**
+
+```tsx
+import { FormSection } from '../sections/form-section';
+
+interface VideoViewProps {
+	videoId: string;
+}
+
+// 1. Make the Server Component async
+export const VideoView = async ({ videoId }: VideoViewProps) => {
+	// 2. Fetch data directly on the server (e.g., call a service or Prisma function)
+	// NOTE: This is a placeholder; you'd replace this with a direct database query.
+	const res = await fetch(`http://localhost:3000/api/video?id=${videoId}`, {
+		method: 'GET',
+		// Optional: Ensure this server fetch is dynamic
+		cache: 'no-store',
+	});
+
+	if (!res.ok) {
+		throw new Error('Failed to fetch video data on server.');
+	}
+
+	const singleVideo = await res.json();
+
+	// 3. Pass the fetched data down as props
+	return (
+		<div className="px-4 pt-2.5 max-w-5xl">
+			{/* FormSection is now responsible ONLY for UI/Interactivity */}
+			<FormSection videoId={videoId} initialVideoData={singleVideo} />
+		</div>
+	);
+};
+```
+
+##### **Step 2: Modify `FormSection` (Client Component)**
+
+Remove the `useEffect` and `useState` for data fetching. It now receives the data as a prop and initializes its internal state (if needed for editing) or simply renders the data.
+
+**`/modules/studio/ui/view/sections/form-section.tsx` (Simplified Client Component)**
+
+```typescript
+'use client';
+
+import { SingleVideoType } from '@/types';
+import { useState } from 'react';
+
+interface FormSectionProps {
+	videoId: string;
+	// 1. New prop for data passed from the server
+	initialVideoData: SingleVideoType;
+}
+
+export const FormSection = ({ videoId, initialVideoData }: FormSectionProps) => {
+	// 2. Initialize state with the server-fetched data (good for forms/editing)
+	const [videoData, setVideoData] = useState<SingleVideoType>(initialVideoData);
+
+	// NOTE: useEffect for fetching is now GONE!
+
+	return (
+		<div className="border p-4">
+			<h2>Video ID: {videoId}</h2>
+			<h3>Data Loaded via Server Suspense</h3>
+			<pre>{JSON.stringify(videoData, null, 2)}</pre>
+			{/* Add your form inputs here, using videoData */}
+		</div>
+	);
+};
+```
+
+##### **Step 3: The `page.tsx` Remains the Same (It Works Now\!)**
+
+Since `VideoView` is now an `async` Server Component, when the Next.js/React runtime hits `await VideoView(...)`, it pauses the rendering of the parent and _throws a Promise_ while the server-side fetch is running. This Promise is caught by the `<Suspense>` boundary, which then displays the fallback:
+
+**`page.tsx` (No Changes Needed)**
+
+```tsx
+import { VideoView } from '@/modules/studio/ui/view/video-view';
+import { Suspense } from 'react';
+
+// ... other code ...
+
+const page = async ({ params }: PageProps) => {
+	const { videoId } = await params;
+	return (
+		<div>
+			{/* THIS SUSPENSE NOW CATCHES THE PROMISE THROWN BY THE ASYNC VideoView */}
+			<Suspense fallback={<p>Loading in suspense....</p>}>
+				<VideoView videoId={videoId} />
+			</Suspense>
+		</div>
+	);
+};
+
+export default page;
+```
+
+### If I try to make FormSection component async, it throws an error of <FormSection> is an async Client Component. Only Server Components can be async at the moment. This error is often caused by accidentally adding `'use client'` to a module that was originally written for the server.
+
+That's a very common and expected error\!
+
+The error you are seeing when you try to make your `FormSection` component `async` is likely one of the following, depending on the full environment:
+
+1.  **"Async component is not allowed in Client Components"** (or similar wording).
+2.  **"Functions that are passed as props to Client Components cannot be async"**.
+
+#### **The Core Problem**
+
+The fundamental rule in the Next.js App Router and modern React architecture is:
+
+**You cannot use the `async/await` syntax within a Client Component.**
+
+Client Components are marked by the `'use client'` directive. They are expected to be regular React functions that run in the browser. The `async` keyword is reserved for **Server Components** (components without the `'use client'` directive) where Next.js/React can stream and render their output before the client-side JavaScript bundle loads.
+
+Since your `FormSection` component is clearly marked:
+
+```typescript
+'use client';
+// ...
+export const FormSection = ({ videoId }: FormSectionProps) => { // NOT async
+```
+
+You must keep it a regular, synchronous function.
+
+---
+
+#### **The Solution Recap (The Correct Way to Use Suspense)**
+
+As detailed in the previous response, the correct approach is to keep the data fetching logic **out** of the client component's initial render cycle and place it into a parent **Server Component** that can be `async`.
+
+##### **Current (Broken) Flow:**
+
+1.  **Server Component (`VideoView`)** renders.
+2.  It passes props to **Client Component (`FormSection`)**.
+3.  `FormSection` mounts in the browser.
+4.  `useEffect` runs _after_ rendering and starts fetching.
+5.  **Suspense does not catch this fetch.**
+
+##### **Correct (Suspense-Enabled) Flow:**
+
+1.  **Server Component (`VideoView`)** is made `async`.
+2.  `VideoView` executes the `await fetch(...)` **on the server**.
+3.  While the fetch is pending, the parent `<Suspense>` boundary displays the fallback.
+4.  Once data is ready, `VideoView` resumes and passes the **data** as a prop to `FormSection`.
+5.  **Client Component (`FormSection`)** renders immediately with the data, eliminating the need for `useState` and `useEffect` for the initial fetch.
+
+#### **Actionable Steps to Fix Your Code**
+
+1.  **Remove `useState` and `useEffect` from `FormSection`.**
+2.  **Modify `VideoView` to be `async`** and fetch the `singleVideo` data.
+3.  **Pass the fetched data into `FormSection`** as a prop (`initialVideoData`).
+
+This makes your application structure align with the best practices for the Next.js App Router and React Suspense.
+
+### what change should I make in video-view.tsx file so that component renders suspense fallback always
+
+There should be a delay in `video-view.tsx` file. This file returns a promise. If the promise is successful server components renders successfully. If there is any delay in the promise, server component will fall back to suspense during the time of delay.
+
+in `video-view.tsx`, add
+
+```jsx
+const delay = (ms: number) => {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
+export const VideoView = async ({ videoId }: VideoViewProps) => {
+	await delay(3000); // wait for 3 second
+
+	//....
+};
+```
