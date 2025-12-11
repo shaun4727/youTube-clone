@@ -18,6 +18,7 @@ export const getStudioFiles = async (id: string, offset: number = 0) => {
 				previewUrl: true,
 				muxStatus: true,
 				createdAt: true,
+				visibility: true,
 			},
 			take: DEFAULT_LIMIT + 1,
 			skip: offset,

@@ -2,6 +2,7 @@
 
 import { InfiniteScroll } from '@/components/infinite-scroll';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { VideoVisibility } from '@/generated/prisma/enums';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { snakeCaseToTitle } from '@/lib/utils';
 import { VideoThumbnail } from '@/modules/videos/ui/components/video-thumbnail';
@@ -32,6 +33,7 @@ export const VideosSection = () => {
 			setLoadingState(false);
 
 			const result = await res.json();
+
 			setStudioVid((prevRes) => {
 				if (!prevRes.studioVideosWithLimit.length) {
 					return result;
@@ -124,7 +126,7 @@ export const VideosSection = () => {
 								</TableCell>
 								<TableCell>
 									<div className="flex items-center">
-										{item.visibility === 'PRIVATE' ? (
+										{item.visibility == VideoVisibility.PRIVATE ? (
 											<LockIcon className="size-4 mr-2" />
 										) : (
 											<Globe2Icon className="size-4 mr-2" />
