@@ -2,6 +2,7 @@ import { auth } from '@/auth';
 import type { Metadata } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { Inter } from 'next/font/google';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const interFont = Inter({
@@ -24,7 +25,10 @@ export default async function RootLayout({
 	return (
 		<SessionProvider session={session}>
 			<html lang="en">
-				<body className={`${interFont.variable}`}>{children}</body>
+				<body className={`${interFont.variable}`}>
+					<Toaster />
+					{children}
+				</body>
 			</html>
 		</SessionProvider>
 	);

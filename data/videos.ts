@@ -13,12 +13,15 @@ export const getStudioFiles = async (id: string, offset: number = 0) => {
 				id: true,
 				name: true,
 				description: true,
+				categoryId: true,
 				thumbnailUrl: true,
 				duration: true,
 				previewUrl: true,
 				muxStatus: true,
 				createdAt: true,
 				visibility: true,
+				muxPlaybackId: true,
+				muxTrackStatus: true,
 			},
 			take: DEFAULT_LIMIT + 1,
 			skip: offset,
@@ -199,12 +202,15 @@ export const getSingleVideo = async (id: string) => {
 				id: true,
 				name: true,
 				description: true,
+				categoryId: true,
 				thumbnailUrl: true,
 				duration: true,
 				previewUrl: true,
 				muxStatus: true,
 				createdAt: true,
 				visibility: true,
+				muxPlaybackId: true,
+				muxTrackStatus: true,
 			},
 		});
 
@@ -214,5 +220,85 @@ export const getSingleVideo = async (id: string) => {
 	} catch (e) {
 		console.log(e);
 		return null;
+	}
+};
+
+export const updateSingleVideoSchemaOnReady = async ({
+	whereField,
+	data,
+	selectFields,
+}: {
+	whereField: { key: VideoUniqueField; value: any };
+	data: Prisma.VideoUncheckedCreateInput;
+	selectFields?: Prisma.VideoSelect;
+}) => {
+	try {
+		// Build dynamic where object
+		const where: Prisma.VideoWhereUniqueInput = {
+			[whereField.key]: whereField.value,
+		} as Prisma.VideoWhereUniqueInput;
+
+		const updatedVideo = await prisma.video.update({
+			where,
+			data,
+			select: selectFields,
+		});
+
+		return updatedVideo;
+	} catch (err) {
+		console.log(err);
+		throw err;
+	}
+};
+
+// Extend the payload type to use Prisma types for better safety
+interface DeleteVideoPayload {
+	whereFields: { key: 'id' | 'userId'; value: string }[];
+	selectFields?: { id: true };
+}
+
+export const deleteSingleVideoSchemaOnReady = async ({
+	whereFields,
+	selectFields = { id: true }, // Default to selecting the ID
+}: DeleteVideoPayload) => {
+	try {
+		// 1. Build the dynamic WHERE object
+		// The delete query needs a single unique identifier, which is typically 'id'.
+		// However, we want to ensure the userId matches.
+		// We use 'delete' on a unique field and check ownership with 'findUniqueOrThrow'
+		// or ensure the video exists and belongs to the user first.
+		// A safer, more explicit way is to use 'deleteMany' with both criteria,
+		// or 'delete' after a security check.
+
+		// --- Security Check (Recommended) ---
+		// 1. Find the video using BOTH id and userId
+		const videoId = whereFields.find((f) => f.key === 'id')?.value;
+		const userId = whereFields.find((f) => f.key === 'userId')?.value;
+
+		if (!videoId || !userId) {
+			throw new Error("Missing required 'id' or 'userId' in whereFields.");
+		}
+
+		// 2. Perform the secure delete using 'delete' on the unique ID,
+		//    AND ensuring the record exists with the correct userId.
+		//    Prisma's 'delete' method requires a 'WhereUniqueInput', so we use
+		//    'id' but include a 'where' check for 'userId' inside.
+		//    Since this pattern is complex for a simple delete, let's stick to the secure AND logic.
+
+		const deletedVideo = await prisma.video.delete({
+			where: {
+				id: videoId,
+				// This combines the unique 'id' with a check for 'userId'
+				// ensuring the row exists AND belongs to the user before deletion.
+				userId: userId,
+			},
+			select: selectFields,
+		});
+
+		return deletedVideo;
+	} catch (err) {
+		// Handle Prisma record not found error (P2025) gracefully
+		console.error('Prisma Delete Error:', err);
+		throw err;
 	}
 };

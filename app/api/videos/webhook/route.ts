@@ -78,6 +78,7 @@ export const POST = async (request: Request) => {
 					id: true,
 					name: true,
 					muxAssetId: true,
+					muxTrackStatus: true,
 					muxStatus: true,
 				},
 			});
@@ -101,6 +102,7 @@ export const POST = async (request: Request) => {
 					name: true,
 					muxAssetId: true,
 					muxStatus: true,
+					muxTrackStatus: true,
 				},
 			});
 			break;

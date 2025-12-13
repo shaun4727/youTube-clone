@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   start from ----- 8:28:00
+-   start from ----- 9:09:00
 
 # Steps
 
@@ -1594,4 +1594,154 @@ export const VideoView = async ({ videoId }: VideoViewProps) => {
 
 	//....
 };
+```
+
+### what zod resolver does with resolver of react hook form?
+
+This is a great question about using the Zod library with React Hook Form\!
+
+The **Zod Resolver** acts as a crucial bridge between **React Hook Form (RHF)** and the **Zod schema validation library**.
+
+Here is a breakdown of what the Zod Resolver does with the resolver function of React Hook Form:
+
+#### ⚙️ The Role of the Resolver in React Hook Form
+
+React Hook Form requires a `resolver` function as an optional parameter to integrate external validation libraries.
+
+-   The RHF library expects this `resolver` function to take the form data as input and return an object with either validation `values` (if successful) or validation `errors` (if unsuccessful).
+-   **Without a resolver**, RHF relies on its built-in, individual field validation (using the `rules` parameter in `register`).
+
+#### 🤝 What the Zod Resolver Does
+
+The Zod Resolver is a package (usually `@hookform/resolvers/zod`) that takes your Zod schema and transforms it into the specific format that React Hook Form's `resolver` function expects.
+
+Here are its key functions:
+
+1.  **Translates the Zod Schema:**
+
+    -   You define your form's data structure and validation rules using **Zod** (e.g., `z.object({ email: z.string().email(), password: z.string().min(8) })`).
+    -   The Zod Resolver takes this schema and wraps it in a function that RHF can execute.
+
+2.  **Performs the Validation:**
+
+    -   When RHF triggers validation (on submit, change, or blur, based on your RHF mode), it calls the `resolver` function provided to `useForm`.
+    -   The Zod Resolver then runs the incoming form data against your original **Zod schema** using Zod's powerful validation engine.
+
+3.  **Formats the Output for RHF:**
+
+    -   **Success:** If the Zod validation passes, the Zod Resolver returns an object with the successfully parsed data in the RHF-expected format: `{ values: validatedData, errors: {} }`.
+    -   **Failure:** If the Zod validation fails, Zod throws a detailed error. The Zod Resolver catches this error and transforms the complex Zod validation error object into the simple `{ errors: { fieldName: { message: '...' } } }` structure that RHF needs to display error messages on the form fields.
+
+#### 📝 Example of Implementation
+
+You pass the result of the Zod Resolver directly into the `useForm` hook:
+
+```javascript
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+// 1. Define the Zod Schema
+const loginSchema = z.object({
+	email: z.string().email('Invalid email address'),
+	password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+// 2. Use the Zod Resolver in useForm
+const {
+	register,
+	handleSubmit,
+	formState: { errors },
+} = useForm({
+	// This is where the Zod Resolver does its work:
+	resolver: zodResolver(loginSchema),
+	// Optional: Set default values based on the schema's type
+	defaultValues: {
+		email: '',
+		password: '',
+	},
+});
+
+// ... rest of the form component
+```
+
+#### 🔑 In Summary
+
+| Feature     | React Hook Form's `resolver`                                                            | Zod Resolver (`@hookform/resolvers/zod`)                                                     |
+| :---------- | :-------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------- |
+| **Purpose** | A required interface for external validation libraries to connect and report results.   | The specific package that translates a Zod schema into the RHF-compatible resolver function. |
+| **Input**   | The raw form data.                                                                      | The Zod schema object.                                                                       |
+| **Output**  | An object like `{ values: data, errors: {} }` or `{ values: {}, errors: errorObject }`. | A function that produces the required RHF output after running data against the Zod schema.  |
+
+Would you like to see a comparison of the benefits of using the Zod Resolver versus RHF's built-in validation?
+
+```jsx
+<Form {...form}>
+	<form onSubmit={form.handleSubmit(onSubmit)}>
+		<div className="flex items-center justify-between mb-6">
+			<div>
+				<h1 className="text-2xl font-bold">Video Details</h1>
+				<p className="text-xs text-muted-foreground">Manage your video details</p>
+			</div>
+
+			<div className="flex items-center gap-x-2">
+				<Button type="submit" disabled={false}>
+					Save
+				</Button>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="ghost" size="icon">
+							<MoreVerticalIcon />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuItem>
+							<TrashIcon className="size-4 mr-2" />
+							Delete
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			</div>
+		</div>
+		<div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+			<div className="space-y-8 lg:col-span-3">
+				<FormField
+					control={form.control}
+					name="name"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>
+								Title
+								{/* TODO: add AI generate button */}
+							</FormLabel>
+							<FormControl>
+								<Input {...field} placeholder="Add a title to your video" />
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="description"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Description</FormLabel>
+							<FormControl>
+								<Textarea
+									{...field}
+									value={field.value ?? ''}
+									rows={10}
+									className="resize-none pr-10"
+									placeholder="Add a title to your video"
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+			</div>
+		</div>
+	</form>
+</Form>
 ```

@@ -17,10 +17,11 @@ export const VideoView = async ({ videoId }: PageProps) => {
 	});
 
 	const result = await res.json();
+	const fullUrl = `${process.env.CLIENT_ADDRESS}/videos/${result.studioVideo.id}`;
 
 	return (
 		<div className="px-4 pt-2.5 max-w-5xl">
-			<FormSection video={result} />
+			<FormSection video={result} fullUrl={fullUrl} />
 		</div>
 	);
 };
