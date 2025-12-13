@@ -15,22 +15,35 @@ import { useCurrentUser } from '@/hooks/use-current-user';
 import { VideoSchemaZod } from '@/schema';
 import { SingleVideoType } from '@/types';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CopyCheckIcon, CopyIcon, Globe2Icon, LockIcon, MoreVerticalIcon, TrashIcon } from 'lucide-react';
+import {
+	CopyCheckIcon,
+	CopyIcon,
+	Globe2Icon,
+	ImagePlusIcon,
+	LockIcon,
+	MoreVerticalIcon,
+	RotateCcwIcon,
+	SparklesIcon,
+	TrashIcon,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { snakeCaseToTitle } from '@/lib/utils';
 import Link from 'next/link';
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import * as z from 'zod';
+import { ThumbnailUploadModal } from '../components/thumbnail-upload-modal';
 import { VideoPlayer } from '../components/video-player';
 
 export const FormSection = ({ video, fullUrl }: { video: { studioVideo: SingleVideoType }; fullUrl: string }) => {
 	const [categories, setCategories] = useState<{ value: string; label: string }[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isCopied, setIsCopied] = useState(true);
+	const [thumbnailModalOpen, setThumbnailModalOpen] = useState(false);
 
 	const currUser = useCurrentUser();
 	const router = useRouter();
@@ -132,6 +145,11 @@ export const FormSection = ({ video, fullUrl }: { video: { studioVideo: SingleVi
 
 	return (
 		<>
+			<ThumbnailUploadModal
+				open={thumbnailModalOpen}
+				onOpenChange={setThumbnailModalOpen}
+				videoId={video.studioVideo.id}
+			/>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)}>
 					<div className="flex items-center justify-between mb-6">
@@ -197,6 +215,51 @@ export const FormSection = ({ video, fullUrl }: { video: { studioVideo: SingleVi
 								)}
 							/>
 							{/* Add thumbnail field here */}
+							<FormField
+								name="thumbnailUrl"
+								control={form.control}
+								render={() => (
+									<FormItem>
+										<FormLabel>Thumbnail</FormLabel>
+										<FormControl>
+											<div className="p-0.5 border border-dashed border-neutral-400 relative h-[84px] w-[153px] group">
+												<Image
+													src={video.studioVideo.thumbnailUrl ?? '/placeholder.svg'}
+													fill
+													alt="Thumbnail"
+													className="object-cover"
+												/>
+
+												<DropdownMenu>
+													<DropdownMenuTrigger asChild>
+														<Button
+															type="button"
+															size="icon"
+															className=" bg-black hover:bg-black/50 absolute top-1 right-1 z-10 rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 duration-150 size-7"
+														>
+															<MoreVerticalIcon className="text-white" />
+														</Button>
+													</DropdownMenuTrigger>
+													<DropdownMenuContent>
+														<DropdownMenuItem onClick={() => setThumbnailModalOpen(true)}>
+															<ImagePlusIcon className="size-4 mr-1" />
+															Change
+														</DropdownMenuItem>
+														<DropdownMenuItem>
+															<SparklesIcon className="size-4 mr-1" />
+															AI-Generated
+														</DropdownMenuItem>
+														<DropdownMenuItem>
+															<RotateCcwIcon className="size-4 mr-1" />
+															Restore
+														</DropdownMenuItem>
+													</DropdownMenuContent>
+												</DropdownMenu>
+											</div>
+										</FormControl>
+									</FormItem>
+								)}
+							/>
 							<FormField
 								control={form.control}
 								name="categoryId"

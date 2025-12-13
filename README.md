@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   start from ----- 9:09:00
+-   start from ----- 9:42:00
 
 # Steps
 
@@ -1745,3 +1745,7 @@ Would you like to see a comparison of the benefits of using the Zod Resolver ver
 	</form>
 </Form>
 ```
+
+## Chapter 15 | Video Thumbnail
+
+-   Integrate UploadThing

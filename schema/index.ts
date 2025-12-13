@@ -11,12 +11,12 @@ export const VideoSchemaZod = z.object({
 	description: z.string().min(1, {
 		message: 'Description is required',
 	}),
-	// thumbnailUrl: z
-	// 	.string()
-	// 	.min(1, {
-	// 		message: 'Thumbnail is required',
-	// 	})
-	// 	.optional(),
+	thumbnailUrl: z
+		.string()
+		.min(1, {
+			message: 'Thumbnail is required',
+		})
+		.optional(),
 	// previewUrl: z
 	// 	.string()
 	// 	.min(1, {
