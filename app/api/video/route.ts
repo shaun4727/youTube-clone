@@ -22,7 +22,6 @@ export async function PATCH(req: Request) {
 		const body = await req.json();
 		const video = await getSingleVideo(body.id as string);
 
-		console.log('called 12');
 		const thumbnailUrl = `https://image.mux.com/${video?.studioVideo?.muxPlaybackId}/thumbnail.jpg`;
 
 		const payload = {

@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   start from ----- 10:05:00
+-   [start from 13.00.00](https://www.youtube.com/watch?v=ig26iRcMavQ)
 
 # Steps
 
@@ -1761,3 +1761,7 @@ Would you like to see a comparison of the benefits of using the Zod Resolver ver
 The main purpose is to offload heavy computational work and process large volumes of data asynchronously, leading to better user experience, higher efficiency, and automated insights.
 
 ## Chapter 17 | AI Thumbnails
+
+## Chapter 18 | Video Page
+
+-   [start from 13.00.00](https://www.youtube.com/watch?v=ig26iRcMavQ)
