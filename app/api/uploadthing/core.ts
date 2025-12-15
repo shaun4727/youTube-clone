@@ -66,6 +66,8 @@ export const ourFileRouter = {
 				});
 			}
 
+			console.log('upload on create');
+
 			// Whatever is returned here is accessible in onUploadComplete as `metadata`
 			return { ...{ user: { ...currUser } }, ...input };
 		})

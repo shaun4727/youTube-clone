@@ -95,6 +95,7 @@ export const createStudioVideo = async (videoData: {
 		});
 
 		// The 'newVideo' object will contain the created data, including the auto-generated 'id' and 'createdAt'.
+
 		return { video: newVideo, url: upload.url };
 	} catch (e) {
 		// Log the error for debugging purposes
@@ -347,5 +348,22 @@ export const restoreThumbnail = async (body: any) => {
 	} catch (e) {
 		console.log(e);
 		return null;
+	}
+};
+
+export const findSingleVideoWithUploadId = async (body: any) => {
+	try {
+		const existingVideo = await prisma.video.findUnique({
+			where: { muxUploadId: body.upload_id },
+			select: {
+				thumbnailUrl: true,
+				previewUrl: true,
+				muxStatus: true,
+			},
+		});
+
+		return existingVideo;
+	} catch (err) {
+		console.log(err);
 	}
 };

@@ -24,6 +24,7 @@ export const StudioUploadModal = () => {
 	const createVideoFunc = async () => {
 		try {
 			setLoadingIcon(true);
+
 			const res = await fetch('/api/videos', {
 				method: 'POST',
 				headers: {
@@ -39,9 +40,10 @@ export const StudioUploadModal = () => {
 			openDrawerFunc();
 			const result = await res.json();
 			setVideoData(result);
-			setLoadingIcon(false);
 		} catch (err) {
 			console.log(err);
+		} finally {
+			setLoadingIcon(false);
 		}
 	};
 

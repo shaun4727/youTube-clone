@@ -1,4 +1,9 @@
-import { deleteVideoSchemaOnReady, updateVideoSchema, updateVideoSchemaOnReady } from '@/data/videos';
+import {
+	deleteVideoSchemaOnReady,
+	findSingleVideoWithUploadId,
+	updateVideoSchema,
+	updateVideoSchemaOnReady,
+} from '@/data/videos';
 import { mux } from '@/lib/mux';
 import { headers } from 'next/headers';
 
@@ -60,6 +65,12 @@ export const POST = async (request: Request) => {
 				return new Response('Missing playback ID', { status: 400 });
 			}
 
+			const existingVideo = await findSingleVideoWithUploadId({ upload_id: data.upload_id });
+
+			if (existingVideo?.thumbnailUrl && existingVideo?.previewUrl) {
+				console.log('Webhook already processed');
+				return new Response('Already processed', { status: 200 });
+			}
 			const tempThumbnailUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg`;
 			const tempPreviewUrl = `https://image.mux.com/${playbackId}/animated.gif`;
 
@@ -70,7 +81,6 @@ export const POST = async (request: Request) => {
 				tempPreviewUrl,
 			]);
 
-			console.log('uploading 111');
 			if (!uploadedThumbnail.data || !uploadedPreview.data) {
 				return new Response('Failed to upload thumbnail or preview', { status: 500 });
 			}
@@ -133,8 +143,6 @@ export const POST = async (request: Request) => {
 				return new Response('Missing upload ID', { status: 400 });
 			}
 
-			console.log('deleted data ', data.upload_id, data);
-
 			await deleteVideoSchemaOnReady({
 				whereField: { key: 'muxUploadId', value: data.upload_id },
 				selectFields: {
@@ -145,9 +153,7 @@ export const POST = async (request: Request) => {
 				},
 			});
 
-			// const payload = {
-			//     data.upload
-			// }
+			break;
 		}
 
 		case 'video.asset.track.ready': {
@@ -176,6 +182,8 @@ export const POST = async (request: Request) => {
 					muxStatus: true,
 				},
 			});
+
+			break;
 		}
 	}
 

@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
 	 * this line will disable reload two times
 	 *
 	 */
+	// reactStrictMode: false,
 
 	images: {
 		remotePatterns: [
