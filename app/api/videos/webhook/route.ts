@@ -11,6 +11,7 @@ import {
 	VideoAssetReadyWebhookEvent,
 	VideoAssetTrackReadyWebhookEvent,
 } from '@mux/mux-node/resources/webhooks';
+import { UTApi } from 'uploadthing/server';
 
 type WebhookEvent =
 	| VideoAssetCreatedWebhookEvent
@@ -59,8 +60,23 @@ export const POST = async (request: Request) => {
 				return new Response('Missing playback ID', { status: 400 });
 			}
 
-			const thumbnailUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg`;
-			const previewUrl = `https://image.mux.com/${playbackId}/animated.gif`;
+			const tempThumbnailUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg`;
+			const tempPreviewUrl = `https://image.mux.com/${playbackId}/animated.gif`;
+
+			const utapi = new UTApi();
+
+			const [uploadedThumbnail, uploadedPreview] = await utapi.uploadFilesFromUrl([
+				tempThumbnailUrl,
+				tempPreviewUrl,
+			]);
+
+			console.log('uploading 111');
+			if (!uploadedThumbnail.data || !uploadedPreview.data) {
+				return new Response('Failed to upload thumbnail or preview', { status: 500 });
+			}
+
+			const { key: thumbnailKey, ufsUrl: thumbnailUrl } = uploadedThumbnail.data;
+			const { key: previewKey, ufsUrl: previewUrl } = uploadedPreview.data;
 
 			const duration = data.duration ? Math.round(data.duration * 1000) : 0;
 
@@ -71,7 +87,9 @@ export const POST = async (request: Request) => {
 					muxPlaybackId: playbackId,
 					muxAssetId: data.id,
 					thumbnailUrl: thumbnailUrl,
+					thumbnailKey: thumbnailKey,
 					previewUrl: previewUrl,
+					previewKey: previewKey,
 					duration: duration,
 				},
 				selectFields: {
@@ -115,6 +133,8 @@ export const POST = async (request: Request) => {
 				return new Response('Missing upload ID', { status: 400 });
 			}
 
+			console.log('deleted data ', data.upload_id, data);
+
 			await deleteVideoSchemaOnReady({
 				whereField: { key: 'muxUploadId', value: data.upload_id },
 				selectFields: {
@@ -124,6 +144,10 @@ export const POST = async (request: Request) => {
 					muxStatus: true,
 				},
 			});
+
+			// const payload = {
+			//     data.upload
+			// }
 		}
 
 		case 'video.asset.track.ready': {

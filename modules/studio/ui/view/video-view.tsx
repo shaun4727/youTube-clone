@@ -9,7 +9,7 @@ const delay = (ms: number) => {
 };
 
 export const VideoView = async ({ videoId }: PageProps) => {
-	await delay(3000);
+	// await delay(3000);
 
 	const res = await fetch(`${process.env.CLIENT_ADDRESS}/api/video?id=${videoId}`, {
 		method: 'GET',

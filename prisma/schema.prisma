@@ -92,7 +92,9 @@ model Video{
     muxTrackId String? @unique @db.Text
     muxTrackStatus String? @db.Text
     thumbnailUrl String? 
+    thumbnailKey String @db.Text @default("")
     previewUrl String? 
+    previewKey String @db.Text @default("")
     duration Int @default(0)
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   start from ----- 9:42:00
+-   start from ----- 10:05:00
 
 # Steps
 
@@ -1749,3 +1749,7 @@ Would you like to see a comparison of the benefits of using the Zod Resolver ver
 ## Chapter 15 | Video Thumbnail
 
 -   Integrate UploadThing
+
+1. this auth() should return a userId, which should match db/logged in userID
+2. /update videos with thumbnailUrl -> file.url, where video.id, metadata.videoId is equal and videos.userId, metadata.userId is equal
+3. aa

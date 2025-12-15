@@ -2,6 +2,7 @@ import { DEFAULT_LIMIT } from '@/constants';
 import { Prisma } from '@/generated/prisma/client';
 import prisma from '@/lib/db';
 import { mux } from '@/lib/mux';
+import { UploadThingError, UTApi } from 'uploadthing/server';
 
 export const getStudioFiles = async (id: string, offset: number = 0) => {
 	try {
@@ -22,6 +23,7 @@ export const getStudioFiles = async (id: string, offset: number = 0) => {
 				visibility: true,
 				muxPlaybackId: true,
 				muxTrackStatus: true,
+				thumbnailKey: true,
 			},
 			take: DEFAULT_LIMIT + 1,
 			skip: offset,
@@ -211,6 +213,7 @@ export const getSingleVideo = async (id: string) => {
 				visibility: true,
 				muxPlaybackId: true,
 				muxTrackStatus: true,
+				thumbnailKey: true,
 			},
 		});
 
@@ -300,5 +303,49 @@ export const deleteSingleVideoSchemaOnReady = async ({
 		// Handle Prisma record not found error (P2025) gracefully
 		console.error('Prisma Delete Error:', err);
 		throw err;
+	}
+};
+
+export const restoreThumbnail = async (body: any) => {
+	try {
+		if (body.video.thumbnailKey) {
+			const utapi = new UTApi();
+
+			const tempThumbnailUrl = body.video.thumbnailUrl;
+
+			const uploadedThumbnail = await utapi.uploadFilesFromUrl(tempThumbnailUrl);
+
+			if (!uploadedThumbnail.data) {
+				throw new UploadThingError({ code: 'INTERNAL_SERVER_ERROR' });
+			}
+
+			const { key: thumbnailKey, ufsUrl: thumbnailUrl } = uploadedThumbnail.data;
+
+			await utapi.deleteFiles(body.video.thumbnailKey);
+
+			await prisma.video.update({
+				where: {
+					id: body.video.id,
+				},
+				data: {
+					thumbnailUrl: thumbnailUrl,
+					thumbnailKey: thumbnailKey,
+				},
+			});
+
+			// await prisma.video.update({
+			// 	where: {
+			// 		id: body.video.id,
+			// 		userId: body.userId,
+			// 	},
+			// 	data: {
+			// 		thumbnailKey: '',
+			// 	},
+			// });
+		}
+		return null;
+	} catch (e) {
+		console.log(e);
+		return null;
 	}
 };

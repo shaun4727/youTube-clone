@@ -134,6 +134,32 @@ export const FormSection = ({ video, fullUrl }: { video: { studioVideo: SingleVi
 		}
 	};
 
+	const restoreThumbnailUrl = async () => {
+		try {
+			let toastId: number | string = 1;
+			const payload = {
+				id: video?.studioVideo?.id,
+				currUser,
+			};
+			const res = await fetch('/api/video', {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(payload),
+			});
+
+			if (res.status == 200) {
+				toastId = toast.success('Thumbnail restored successfully!', { id: toastId });
+				router.refresh();
+			} else {
+				toast.error('Thumbnail restoration failed!', { id: toastId });
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	const onCopy = async () => {
 		await navigator.clipboard.writeText(fullUrl);
 		setIsCopied(true);
@@ -249,7 +275,7 @@ export const FormSection = ({ video, fullUrl }: { video: { studioVideo: SingleVi
 															<SparklesIcon className="size-4 mr-1" />
 															AI-Generated
 														</DropdownMenuItem>
-														<DropdownMenuItem>
+														<DropdownMenuItem onClick={() => restoreThumbnailUrl()}>
 															<RotateCcwIcon className="size-4 mr-1" />
 															Restore
 														</DropdownMenuItem>

@@ -1,5 +1,7 @@
+import { auth } from '@/auth';
+import prisma from '@/lib/db';
 import { createUploadthing, type FileRouter } from 'uploadthing/next';
-import { UploadThingError } from 'uploadthing/server';
+import { UploadThingError, UTApi } from 'uploadthing/server';
 import z from 'zod';
 
 const f = createUploadthing();
@@ -15,34 +17,79 @@ export const ourFileRouter = {
 	})
 		.input(
 			z.object({
-				videoId: z.string().uuid(),
+				videoId: z.string().min(1),
 			}),
 		)
 		// Set permissions and file types for this FileRoute
 		.middleware(async ({ input }) => {
 			// This code runs on your server before upload
-			const userId = await auth();
+			const session = await auth();
+			const currUser = session?.user;
 			/**
 			 * this auth() should return a userId, which should match db/logged in userID
 			 */
 
 			// If you throw, the user will not be able to upload
-			if (!userId) throw new UploadThingError('Unauthorized');
+			if (!currUser?.id) throw new UploadThingError('Unauthorized');
+
+			// console.log('video id userId ', input.videoId, currUser.id);
+			const existingVideo = await prisma.video.findUnique({
+				where: {
+					id: input.videoId,
+					userId: currUser.id,
+				},
+				select: {
+					id: true,
+					name: true,
+					muxAssetId: true,
+					muxStatus: true,
+					thumbnailKey: true,
+				},
+			});
+
+			if (!existingVideo) throw new UploadThingError('Not found');
+
+			if (existingVideo.thumbnailKey) {
+				const utapi = new UTApi();
+
+				await utapi.deleteFiles(existingVideo.thumbnailKey);
+
+				await prisma.video.update({
+					where: {
+						id: input.videoId,
+						userId: currUser.id,
+					},
+					data: {
+						thumbnailUrl: '',
+						thumbnailKey: '',
+					},
+				});
+			}
 
 			// Whatever is returned here is accessible in onUploadComplete as `metadata`
-			return { userId, ...input };
+			return { ...{ user: { ...currUser } }, ...input };
 		})
 		.onUploadComplete(async ({ metadata, file }) => {
 			// This code RUNS ON YOUR SERVER after upload
-			console.log('Upload complete for userId:', metadata.userId);
 
-			//update videos with thumbnailUrl -> file.url, where video.id, metadata.videoId is equal and
-			// videos.userId, metadata.userId is equal
+			await prisma.video.update({
+				where: {
+					id: metadata.videoId,
+					userId: metadata.user.id,
+				},
+				data: {
+					thumbnailUrl: file.ufsUrl,
+					thumbnailKey: file.key,
+				},
+				select: {
+					id: true,
+					name: true,
+					muxAssetId: true,
+					muxStatus: true,
+				},
+			});
 
-			console.log('file url', file.ufsUrl);
-
-			// !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-			return { uploadedBy: metadata.userId };
+			return { uploadedBy: metadata.user.id };
 		}),
 } satisfies FileRouter;
 
