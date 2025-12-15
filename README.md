@@ -1764,4 +1764,4 @@ The main purpose is to offload heavy computational work and process large volume
 
 ## Chapter 18 | Video Page
 
--   [start from 13.00.00](https://www.youtube.com/watch?v=ig26iRcMavQ)
+-   [start from 18.00.00](https://www.youtube.com/watch?v=ig26iRcMavQ)

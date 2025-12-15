@@ -5,9 +5,15 @@ interface VideoViewPageProps {
 	videoId: string;
 }
 
+const delay = (ms: number) => {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 export const VideoViewPage = async ({ videoId }: VideoViewPageProps) => {
 	const session = await auth();
 	const currUser = session?.user;
+
+	await delay(3000);
 
 	const res = await fetch(`${process.env.CLIENT_ADDRESS}/api/video-page?id=${videoId}&userId=${currUser?.id}`, {
 		method: 'GET',
