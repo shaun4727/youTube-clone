@@ -1753,3 +1753,11 @@ Would you like to see a comparison of the benefits of using the Zod Resolver ver
 1. this auth() should return a userId, which should match db/logged in userID
 2. /update videos with thumbnailUrl -> file.url, where video.id, metadata.videoId is equal and videos.userId, metadata.userId is equal
 3. aa
+
+## Chapter 16 | AI Background Job
+
+"AI Background Jobs" refers to tasks that use Artificial Intelligence or Machine Learning (ML) models to perform intensive, long-running, or scheduled work without requiring immediate user interaction.
+
+The main purpose is to offload heavy computational work and process large volumes of data asynchronously, leading to better user experience, higher efficiency, and automated insights.
+
+## Chapter 17 | AI Thumbnails
