@@ -10,26 +10,29 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useCurrentUser } from '@/hooks/use-current-user';
+import { useAuthUI } from '@/context/user-context';
 import { signOutFromYoutube } from '@/lib/actions/loginLogoutActions';
 
 import { ClapperboardIcon, LogOut, Settings, UserCircleIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 
 const AuthButton = () => {
-	const [user, setUser] = useState<ReturnType<typeof useCurrentUser>>(undefined);
-	const data = useCurrentUser();
+	// const [user, setUser] = useState<ReturnType<typeof useCurrentUser>>(undefined);
+	// const data = useCurrentUser();
+	const { userInfo: user, setUserInfo } = useAuthUI();
 
-	useEffect(() => {
-		setUser(data);
-	}, [data]);
+	// console.log('auth button context ', user);
 
-	const logOutFunc = () => {
+	// useEffect(() => {
+	// 	setUser(data);
+	// }, [data]);
+
+	const logOutFunc = async () => {
 		try {
-			signOutFromYoutube();
-			setUser(undefined);
+			await signOutFromYoutube();
+			// setUser(undefined);
+			setUserInfo(undefined);
 		} catch (err) {
 			console.log('auth-button comp --', err);
 		}

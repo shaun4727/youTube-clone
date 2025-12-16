@@ -7,5 +7,5 @@ export const signInToYoutube = async (provider: 'google') => {
 };
 
 export const signOutFromYoutube = async () => {
-	await signOut();
+	await signOut({ redirect: false });
 };

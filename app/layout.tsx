@@ -1,4 +1,5 @@
 import { auth } from '@/auth';
+import { AuthUIProvider } from '@/context/user-context';
 import type { Metadata } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { Inter } from 'next/font/google';
@@ -27,7 +28,7 @@ export default async function RootLayout({
 			<html lang="en">
 				<body className={`${interFont.variable}`}>
 					<Toaster />
-					{children}
+					<AuthUIProvider>{children}</AuthUIProvider>
 				</body>
 			</html>
 		</SessionProvider>

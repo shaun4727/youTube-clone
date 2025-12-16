@@ -4,7 +4,6 @@ export const getVideoInfoWithUser = async (id: string, userId: string) => {
 	try {
 		const videoInfoWithUser = await prisma.video.findUnique({
 			where: {
-				userId: userId,
 				id: id,
 			},
 			select: {
@@ -26,6 +25,7 @@ export const getVideoInfoWithUser = async (id: string, userId: string) => {
 						id: true,
 						name: true,
 						email: true,
+						image: true,
 					},
 				},
 			},

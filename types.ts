@@ -15,6 +15,17 @@ export type SingleVideoType = {
 	muxTrackStatus: string;
 };
 
+export type User = {
+	id?: string | null;
+	name?: string | null;
+	image?: string | null;
+	email?: string | null;
+};
+
+export interface SingleVideoTypeWithUser extends SingleVideoType {
+	user: User | null;
+}
+
 export type VideoType = {
 	studioVideosWithLimit: SingleVideoType[];
 	hasNextPage: boolean;

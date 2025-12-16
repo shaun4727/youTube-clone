@@ -1765,3 +1765,8 @@ The main purpose is to offload heavy computational work and process large volume
 ## Chapter 18 | Video Page
 
 -   [start from 18.00.00](https://www.youtube.com/watch?v=ig26iRcMavQ)
+
+-   learn how to create custom component, /youtube-clone/modules/users/ui/components/userInfo.tsx -- this is a custom component
+-   use of `useMemo` in `video-top-row.tsx`
+
+## Chapter 19 | Video View

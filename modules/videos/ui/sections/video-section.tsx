@@ -2,26 +2,32 @@
 
 import { cn } from '@/lib/utils';
 import { VideoPlayer } from '@/modules/studio/ui/components/video-player';
-import { SingleVideoType } from '@/types';
+import { SingleVideoTypeWithUser } from '@/types';
 import { VideoBanner } from '../components/video-banner';
+import { VideoTopRow } from '../components/video-top-row';
 
 interface VideoSectionProps {
-	singleVideo: SingleVideoType;
+	singleVideo: SingleVideoTypeWithUser;
 }
 
 export const VideoPageSection = ({ singleVideo }: VideoSectionProps) => {
 	console.log('sss ', singleVideo);
 
 	return (
-		<div className={cn('aspect-video bg-black rounded-xl relative', 'waiting' !== 'ready' && 'rounded-b-none')}>
+		<div
+			className={cn(
+				'aspect-video flex flex-col rounded-xl relative ',
+				singleVideo?.muxStatus !== 'ready' && 'rounded-b-none',
+			)}
+		>
 			<VideoPlayer
 				autoPlay
 				onPlay={() => {}}
-				playbackId={singleVideo.muxPlaybackId}
-				thumbnailUrl={singleVideo.thumbnailUrl}
+				playbackId={singleVideo?.muxPlaybackId}
+				thumbnailUrl={singleVideo?.thumbnailUrl}
 			/>
-			<p>adfa adssdfa</p>
-			<VideoBanner status={'waiting'} />
+			<VideoBanner status={singleVideo?.muxStatus} />
+			<VideoTopRow video={singleVideo} />
 		</div>
 	);
 };
