@@ -52,6 +52,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   videos        Video[]
+  videoViews        videoViews[]
 
   @@map("users")
 }
@@ -108,7 +109,22 @@ model Video{
     user User @relation(fields: [userId], references: [id],onDelete: Cascade)
     category Category? @relation(fields: [categoryId], references: [id],onDelete: SetNull)
 
+    videoViews videoViews[]
+
     @@map("videos")
 }
 
 
+model videoViews{
+    id   String    @id @default(cuid())
+    userId      String
+    videoId     String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id],onDelete: Cascade)
+
+    videos Video? @relation(fields: [videoId], references: [id],onDelete: Cascade)
+
+    @@map("videoViews")
+}

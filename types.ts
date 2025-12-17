@@ -13,6 +13,9 @@ export type SingleVideoType = {
 	categoryId: string;
 	muxPlaybackId: string;
 	muxTrackStatus: string;
+	_count: {
+		videoViews: number;
+	};
 };
 
 export type User = {

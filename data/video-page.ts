@@ -28,6 +28,11 @@ export const getVideoInfoWithUser = async (id: string, userId: string) => {
 						image: true,
 					},
 				},
+				_count: {
+					select: {
+						videoViews: true,
+					},
+				},
 			},
 		});
 

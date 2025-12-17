@@ -15,7 +15,7 @@ export const VideoViewPage = async ({ videoId }: VideoViewPageProps) => {
 	const session = await auth();
 	const currUser = session?.user;
 
-	await delay(3000);
+	// await delay(3000);
 
 	const res = await fetch(`${process.env.CLIENT_ADDRESS}/api/video-page?id=${videoId}&userId=${currUser?.id}`, {
 		method: 'GET',

@@ -1,8 +1,10 @@
 'use client';
 
+import { useAuthUI } from '@/context/user-context';
 import { cn } from '@/lib/utils';
 import { VideoPlayer } from '@/modules/studio/ui/components/video-player';
 import { SingleVideoTypeWithUser } from '@/types';
+import { useRouter } from 'next/navigation';
 import { VideoBanner } from '../components/video-banner';
 import { VideoTopRow } from '../components/video-top-row';
 
@@ -11,7 +13,36 @@ interface VideoSectionProps {
 }
 
 export const VideoPageSection = ({ singleVideo }: VideoSectionProps) => {
-	console.log('sss ', singleVideo);
+	const { userInfo } = useAuthUI();
+	const router = useRouter();
+
+	const onVideoPlayUpdateVideoViewTable = async () => {
+		try {
+			const formPayload = {
+				userId: userInfo?.id,
+				videoId: singleVideo.id,
+			};
+
+			await fetch('/api/video-page', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formPayload),
+			});
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const handlePlay = async () => {
+		if (!userInfo) {
+			return;
+		}
+
+		await onVideoPlayUpdateVideoViewTable();
+		router.refresh();
+	};
 
 	return (
 		<div
@@ -22,7 +53,7 @@ export const VideoPageSection = ({ singleVideo }: VideoSectionProps) => {
 		>
 			<VideoPlayer
 				autoPlay
-				onPlay={() => {}}
+				onPlay={handlePlay}
 				playbackId={singleVideo?.muxPlaybackId}
 				thumbnailUrl={singleVideo?.thumbnailUrl}
 			/>

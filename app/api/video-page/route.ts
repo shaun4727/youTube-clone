@@ -1,4 +1,5 @@
 import { getVideoInfoWithUser } from '@/data/video-page';
+import { createVideoViews } from '@/data/videoViews';
 import { NextResponse } from 'next/server';
 
 export async function GET(req: Request) {
@@ -13,5 +14,18 @@ export async function GET(req: Request) {
 	} catch (err) {
 		console.error(err);
 		return NextResponse.json({ error: 'Failed to create video' }, { status: 500 });
+	}
+}
+
+export async function POST(req: Request) {
+	try {
+		const body = await req.json();
+
+		const newVideo = await createVideoViews(body);
+
+		return NextResponse.json(newVideo, { status: 200 });
+	} catch (err) {
+		console.error(err);
+		return NextResponse.json({ error: 'Failed to create video views' }, { status: 500 });
 	}
 }

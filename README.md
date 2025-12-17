@@ -1770,3 +1770,5 @@ The main purpose is to offload heavy computational work and process large volume
 -   use of `useMemo` in `video-top-row.tsx`
 
 ## Chapter 19 | Video View
+
+## Chapter 20 | Video Reaction
