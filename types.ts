@@ -26,6 +26,12 @@ export type User = {
 	name?: string | null;
 	image?: string | null;
 	email?: string | null;
+	subscriptions: {
+		createdAt: Date;
+		updatedAt: Date;
+		viewerId: string;
+		creatorId: string;
+	}[];
 };
 
 export interface SingleVideoTypeWithUser extends SingleVideoType {

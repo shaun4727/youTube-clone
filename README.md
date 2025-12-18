@@ -1774,3 +1774,92 @@ The main purpose is to offload heavy computational work and process large volume
 ## Chapter 20 | Video Reaction
 
 -   when to use ENUM in database?
+
+## Chapter 21 | Subscriptions
+
+### How would I setup a subscription schema?
+
+To set up a subscription schema (often called a "Self-relation" or "Follower" system), you need to define two distinct relationships back to the `User` model: one for the **Subscriber** (viewer) and one for the **Subscribed-to** (creator).
+
+In Prisma, when you have two relations pointing to the same model, you **must** use relation names to disambiguate them.
+
+#### 1. Updated `Subscription` Model
+
+Change your `subscriptions` model to this structure:
+
+```prisma
+model Subscription {
+    id        String   @id @default(cuid())
+    viewerId  String   // The person following
+    creatorId String   // The person being followed
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // We name the relations so Prisma knows which is which
+    viewer  User @relation("UserSubscribing", fields: [viewerId], references: [id], onDelete: Cascade)
+    creator User @relation("UserBeingSubscribedTo", fields: [creatorId], references: [id], onDelete: Cascade)
+
+    @@unique([viewerId, creatorId]) // Prevents a user from subscribing to the same creator twice
+    @@index([viewerId])
+    @@index([creatorId])
+    @@map("subscriptions")
+}
+
+```
+
+#### 2. Updated `User` Model
+
+You must also update the `User` model to include the "opposite" side of these relations. This allows you to easily query a user's subscribers or the people they follow.
+
+```prisma
+model User {
+  id            String    @id @default(cuid())
+  // ... your other fields (name, email, etc.)
+
+  videos        Video[]
+  videoViews    videoViews[]
+  reactionType  videoReactions[]
+
+  // NEW: Relationships for subscriptions
+  // People who have subscribed to THIS user
+  subscribers   Subscription[] @relation("UserBeingSubscribedTo")
+
+  // People THIS user has subscribed to
+  following     Subscription[] @relation("UserSubscribing")
+
+  @@map("users")
+}
+
+```
+
+---
+
+#### Key Improvements Made:
+
+-   **Relation Names:** By using `"UserSubscribing"` and `"UserBeingSubscribedTo"`, Prisma understands that these are two different logical paths connecting the same two tables.
+-   **Unique Constraint:** The `@@unique([viewerId, creatorId])` is critical. It ensures that the database prevents "duplicate" subscriptions (e.g., a user clicking "Subscribe" twice shouldn't create two rows).
+-   **Indexing:** Added `@@index` on the foreign keys. This makes your "Subscriber count" and "Subscription list" queries much faster as your database grows.
+
+#### How to query this in your `getVideoInfoWithUser` function:
+
+Now, to check if the current viewer is subscribed to the video creator, you can add this check to your existing function:
+
+```typescript
+const subscription = await prisma.subscription.findUnique({
+	where: {
+		viewerId_creatorId: {
+			viewerId: userId, // The logged in user
+			creatorId: videoInfoWithUser.userId, // The owner of the video
+		},
+	},
+});
+
+const isSubscribed = !!subscription;
+```
+
+Would you like me to show you how to write the `toggleSubscription` logic for your API route?
+
+### Subscription Process that I would follow -
+
+-   step 1: first check if the user has subscribed this video already. Based on the condition show the button.
+-   step 2: if the video is not subscribed yet, clicking on subscribe button, insert data into subscription table. and repeat step 1.

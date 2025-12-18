@@ -24,13 +24,32 @@ export const AuthUIProvider = ({ children }: { children: React.ReactNode }) => {
 	// 	router.refresh(); // 🔥 forces session revalidation
 	// }, [router]);
 
+	const getSubscription = async (user: User | undefined) => {
+		try {
+			const res = await fetch(`/api/subscription-section?viewerId=${user?.id}&creatorId=${2}`, {
+				method: 'GET',
+				cache: 'no-store',
+			});
+
+			const result = await res.json();
+			return result;
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	const handleUser = async (user: User | undefined) => {
-		setUserInfo(user);
+		const subList = await getSubscription(user);
+		const userDtl = {
+			...user,
+			subscriptions: subList.subscriptionList,
+		};
+		setUserInfo(userDtl);
 		setIsLoading(false);
 	};
 
 	useEffect(() => {
-		handleUser(user);
+		handleUser(user as User);
 	}, [isLoading]);
 
 	return <AuthUIContext.Provider value={{ userInfo, setUserInfo, setIsLoading }}>{children}</AuthUIContext.Provider>;

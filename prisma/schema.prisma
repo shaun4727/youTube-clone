@@ -55,6 +55,13 @@ model User {
   videoViews    videoViews[]
   reactionType  videoReactions[]
 
+  // NEW: Relationships for subscriptions
+  // People who have subscribed to THIS user
+  subscribers   Subscription[] @relation("UserBeingSubscribedTo")
+  
+  // People THIS user has subscribed to
+  following     Subscription[] @relation("UserSubscribing")
+
   @@map("users")
 }
 
@@ -149,5 +156,23 @@ model videoReactions{
     videos Video? @relation(fields: [videoId], references: [id],onDelete: Cascade)
 
     @@map("videoReactions")
+}
+
+
+model Subscription {
+    id        String   @id @default(cuid())
+    viewerId  String   // The person following
+    creatorId String   // The person being followed
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    // We name the relations so Prisma knows which is which
+    viewer  User @relation("UserSubscribing", fields: [viewerId], references: [id], onDelete: Cascade)
+    creator User @relation("UserBeingSubscribedTo", fields: [creatorId], references: [id], onDelete: Cascade)
+
+    @@unique([viewerId, creatorId]) // Prevents a user from subscribing to the same creator twice
+    @@index([viewerId])
+    @@index([creatorId])
+    @@map("subscriptions")
 }
 
