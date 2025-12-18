@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   [start from 1:46:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+-   [start from 2:28:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
 
 # Steps
 
@@ -1863,3 +1863,5 @@ Would you like me to show you how to write the `toggleSubscription` logic for yo
 
 -   step 1: first check if the user has subscribed this video already. Based on the condition show the button.
 -   step 2: if the video is not subscribed yet, clicking on subscribe button, insert data into subscription table. and repeat step 1.
+
+## Chapter 22 | Comments
