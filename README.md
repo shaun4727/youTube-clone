@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   [start from 1:24:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+-   [start from 1:46:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
 
 # Steps
 
@@ -1764,7 +1764,7 @@ The main purpose is to offload heavy computational work and process large volume
 
 ## Chapter 18 | Video Page
 
--   [start from 18.00.00](https://www.youtube.com/watch?v=ig26iRcMavQ)
+-   [start from 1:28:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
 
 -   learn how to create custom component, /youtube-clone/modules/users/ui/components/userInfo.tsx -- this is a custom component
 -   use of `useMemo` in `video-top-row.tsx`
@@ -1772,3 +1772,5 @@ The main purpose is to offload heavy computational work and process large volume
 ## Chapter 19 | Video View
 
 ## Chapter 20 | Video Reaction
+
+-   when to use ENUM in database?

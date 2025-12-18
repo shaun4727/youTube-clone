@@ -52,7 +52,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
   videos        Video[]
-  videoViews        videoViews[]
+  videoViews    videoViews[]
+  reactionType  videoReactions[]
 
   @@map("users")
 }
@@ -110,6 +111,7 @@ model Video{
     category Category? @relation(fields: [categoryId], references: [id],onDelete: SetNull)
 
     videoViews videoViews[]
+    reactionType videoReactions[]
 
     @@map("videos")
 }
@@ -128,3 +130,24 @@ model videoViews{
 
     @@map("videoViews")
 }
+
+enum ReactionType{
+    like
+    dislike
+}
+
+model videoReactions{
+    id   String    @id @default(cuid())
+    userId      String
+    videoId     String
+    reactionType ReactionType 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id],onDelete: Cascade)
+
+    videos Video? @relation(fields: [videoId], references: [id],onDelete: Cascade)
+
+    @@map("videoReactions")
+}
+
