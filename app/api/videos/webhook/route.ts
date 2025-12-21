@@ -68,7 +68,6 @@ export const POST = async (request: Request) => {
 			const existingVideo = await findSingleVideoWithUploadId({ upload_id: data.upload_id });
 
 			if (existingVideo?.thumbnailUrl && existingVideo?.previewUrl) {
-				console.log('Webhook already processed');
 				return new Response('Already processed', { status: 200 });
 			}
 			const tempThumbnailUrl = `https://image.mux.com/${playbackId}/thumbnail.jpg`;

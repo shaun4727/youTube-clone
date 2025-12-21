@@ -1,6 +1,13 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   [start from 2:28:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+-   [start from 2:40:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+
+# to run the project
+
+1. fill env files
+2. install ngork
+3. setup prisma
+4. integrate mux, uploadthing
 
 # Steps
 
@@ -1865,3 +1872,5 @@ Would you like me to show you how to write the `toggleSubscription` logic for yo
 -   step 2: if the video is not subscribed yet, clicking on subscribe button, insert data into subscription table. and repeat step 1.
 
 ## Chapter 22 | Comments
+
+-   Create comments api and use it to store comment,video id, user id

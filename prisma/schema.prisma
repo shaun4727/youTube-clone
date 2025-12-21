@@ -54,6 +54,7 @@ model User {
   videos        Video[]
   videoViews    videoViews[]
   reactionType  videoReactions[]
+  commentedPeople   Comments[] @relation("UserCommenting")
 
   // NEW: Relationships for subscriptions
   // People who have subscribed to THIS user
@@ -109,6 +110,8 @@ model Video{
     updatedAt DateTime @updatedAt
     visibility VideoVisibility @default(PRIVATE)
 
+    VideoCommented  Comments[] @relation("VideoOnWhichCommented")
+
     // Foreign key to User
     userId String
     categoryId String?
@@ -119,6 +122,7 @@ model Video{
 
     videoViews videoViews[]
     reactionType videoReactions[]
+
 
     @@map("videos")
 }
@@ -174,5 +178,21 @@ model Subscription {
     @@index([viewerId])
     @@index([creatorId])
     @@map("subscriptions")
+}
+
+
+
+model Comments {
+    id        String   @id @default(cuid())
+    userId      String
+    videoId     String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation("UserCommenting",fields: [userId], references: [id],onDelete: Cascade)
+
+    videos Video? @relation("VideoOnWhichCommented",fields: [videoId], references: [id],onDelete: Cascade)
+
+    @@map("comments")
 }
 

@@ -40,13 +40,13 @@ const AuthButton = () => {
 
 	return (
 		<>
-			{user ? (
+			{user && user.image ? (
 				<>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Avatar>
 								<Image
-									src={user?.image as string}
+									src={(user?.image as string) || ''}
 									alt="profile"
 									width={32}
 									height={32}

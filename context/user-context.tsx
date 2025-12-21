@@ -39,10 +39,13 @@ export const AuthUIProvider = ({ children }: { children: React.ReactNode }) => {
 	};
 
 	const handleUser = async (user: User | undefined) => {
-		const subList = await getSubscription(user);
+		let subList = [];
+		if (user) {
+			subList = await getSubscription(user);
+		}
 		const userDtl = {
 			...user,
-			subscriptions: subList.subscriptionList,
+			subscriptions: subList?.subscriptionList || [],
 		};
 		setUserInfo(userDtl);
 		setIsLoading(false);

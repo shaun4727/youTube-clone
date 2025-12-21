@@ -1,3 +1,4 @@
+import { VideoViewLoading } from '@/modules/videos/ui/skeleton/vidoe-view-page-skeleton';
 import { VideoViewPage } from '@/modules/videos/ui/views/video-view-page';
 import { Suspense } from 'react';
 
@@ -11,7 +12,7 @@ const page = async ({ params }: PageProps) => {
 	const { videoId } = await params;
 	return (
 		<div>
-			<Suspense fallback={<p>Loading in suspense....</p>}>
+			<Suspense fallback={<VideoViewLoading />}>
 				<VideoViewPage videoId={videoId} />
 			</Suspense>
 		</div>
