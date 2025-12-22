@@ -21,6 +21,7 @@ export const VideoViewLoading = () => {
 						</div>
 						{/* This represents the VideoDescription area */}
 						<Skeleton className="h-24 w-full mt-2" />
+						<Skeleton className="h-36 w-full mt-2" />
 					</div>
 				</div>
 
