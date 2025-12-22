@@ -48,4 +48,10 @@ export interface CommentFormProps {
 	onSuccess?: () => void;
 }
 
-export interface CommentDataValue {}
+export interface CommentDataValue {
+	videoId: string;
+	userId: string;
+	value: string;
+	user?: User;
+	createdAt?: Date;
+}

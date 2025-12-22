@@ -33,3 +33,7 @@ export const VideoSchemaZod = z.object({
 
 	visibility: VideoVisibilityEnum.default(VideoVisibility.PRIVATE).optional(),
 });
+
+export const CommentSchema = z.object({
+	value: z.string(),
+});
