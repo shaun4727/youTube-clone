@@ -16,7 +16,9 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
 	try {
-		const comments = await getComments();
+		const { searchParams } = new URL(req.url);
+		const offset = searchParams.get('offset');
+		const comments = await getComments(Number(offset));
 
 		return NextResponse.json(comments, { status: 200 });
 	} catch (err) {

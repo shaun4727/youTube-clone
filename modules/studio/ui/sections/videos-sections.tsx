@@ -97,7 +97,7 @@ export const VideosSection = () => {
 
 				return {
 					studioVideosWithLimit: [...prevRes.studioVideosWithLimit, ...result.studioVideosWithLimit],
-					hasNextPage: prevRes.hasNextPage,
+					hasNextPage: result.hasNextPage,
 				};
 			});
 		} catch (err) {

@@ -1,17 +1,38 @@
 'use client';
 
+import { InfiniteScroll } from '@/components/infinite-scroll';
 import { CommentForm } from '@/modules/comments/components/comment-form';
 import { CommentItem } from '@/modules/comments/components/comment-item';
 import { CommentDataValue } from '@/types';
 import { useEffect, useState } from 'react';
 
 export const CommentsSection = () => {
-	const [allComments, setAllComments] = useState<{ allComments: CommentDataValue[] }>();
+	const [allComments, setAllComments] = useState<{ commentsWithLimit: CommentDataValue[]; hasNextPage: Boolean }>();
 	const [loading, setLoading] = useState<boolean>(false);
+	const [offset, setOffset] = useState<number>(-1);
 
-	const getAllComments = async () => {
+	// useEffect(() => {
+	// 	getVideoFunc();
+
+	// 	return () => {
+	// 		setStudioVid({
+	// 			hasNextPage: false,
+	// 			studioVideosWithLimit: [],
+	// 		});
+	// 	};
+	// }, []);
+
+	const getAllComments = async (created?: number) => {
 		try {
-			const resp = await fetch(`/api/comments`, {
+			// setLoadingState(true);
+
+			let count = 0;
+			if (created !== 1) {
+				setOffset(offset + 1);
+				count = (offset + 1) * 5;
+			}
+
+			const resp = await fetch(`/api/comments?offset=${count}`, {
 				method: 'GET',
 				cache: 'no-store',
 				headers: {
@@ -20,8 +41,21 @@ export const CommentsSection = () => {
 			});
 
 			const comments = await resp.json();
-			setAllComments(comments);
-			setLoading(false);
+
+			setAllComments((prevRes) => {
+				if (created === 1) {
+					return comments;
+				}
+
+				if (!prevRes?.commentsWithLimit?.length) {
+					return comments;
+				}
+
+				return {
+					commentsWithLimit: [...prevRes.commentsWithLimit, ...comments.commentsWithLimit],
+					hasNextPage: comments.hasNextPage,
+				};
+			});
 		} catch (err) {
 			console.log(err);
 		}
@@ -29,17 +63,34 @@ export const CommentsSection = () => {
 
 	useEffect(() => {
 		getAllComments();
-	}, [loading]);
+		// return () => {
+		// 	setAllComments({
+		// 		hasNextPage: false,
+		// 		commentsWithLimit: [],
+		// 	});
+		// };
+	}, []);
 
 	return (
 		<div className="mt-6">
 			<div className="flex flex-col gap-6">
-				<h1>0 Comments</h1>
-				<CommentForm setLoading={setLoading} />
+				<h1>
+					{' '}
+					{allComments && allComments.commentsWithLimit && allComments.commentsWithLimit.length} Comments
+				</h1>
+				<CommentForm getAllComments={getAllComments} />
 				<div className="flex flex-col gap-4 mt-2">
 					{allComments &&
-						allComments.allComments?.map((comment, index) => <CommentItem key={index} comment={comment} />)}
+						allComments.commentsWithLimit?.map((comment, index) => (
+							<CommentItem key={index} comment={comment} />
+						))}
 				</div>
+				<InfiniteScroll
+					isManual={true}
+					hasNextPage={allComments?.hasNextPage as boolean}
+					isFetchingNextPage={loading}
+					fetchNextPage={getAllComments}
+				/>
 			</div>
 		</div>
 	);

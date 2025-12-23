@@ -10,16 +10,15 @@ import { CommentSchema } from '@/schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { Dispatch, SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 
 interface CommentFormProps {
-	setLoading: Dispatch<SetStateAction<boolean>>;
+	getAllComments: (created?: number) => void;
 }
 
-export const CommentForm = ({ setLoading }: CommentFormProps) => {
+export const CommentForm = ({ getAllComments }: CommentFormProps) => {
 	const { userInfo: user } = useAuthUI();
 	const params = useParams();
 	const videoId = params.videoId;
@@ -38,6 +37,10 @@ export const CommentForm = ({ setLoading }: CommentFormProps) => {
 				router.push('/sign-in');
 				return;
 			}
+			if (!value.value) {
+				return;
+			}
+
 			let toastId: string | number = '1';
 			const formPayload = {
 				userId: user?.id,
@@ -56,7 +59,7 @@ export const CommentForm = ({ setLoading }: CommentFormProps) => {
 			if (res.status == 200) {
 				form.reset();
 				toastId = toast.success('Video updated successfully!', { id: toastId });
-				setLoading(true);
+				getAllComments(1);
 			} else {
 				toast.error('Video update failed!', { id: toastId });
 			}
