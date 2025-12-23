@@ -63,6 +63,11 @@ model User {
   // People THIS user has subscribed to
   following     Subscription[] @relation("UserSubscribing")
 
+  //User who reacted on a comment
+  commentReacter CommentReactions[] @relation("UserReactedOnComment")
+
+  
+
   @@map("users")
 }
 
@@ -194,6 +199,26 @@ model Comments {
 
     videos Video? @relation("VideoOnWhichCommented",fields: [videoId], references: [id],onDelete: Cascade)
 
+    // Reaction belongs to a comment
+    commentReaction CommentReactions[] @relation("ReactionBelonsToComment")
+
     @@map("comments")
 }
 
+
+model CommentReactions{
+    id String @id @default(cuid())
+    userId String 
+    commentId String
+    reactionType ReactionType 
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+
+        // We name the relations so Prisma knows which is which
+    user  User @relation("UserReactedOnComment", fields: [userId], references: [id], onDelete: Cascade)
+    comment Comments @relation("ReactionBelonsToComment", fields: [commentId], references: [id], onDelete: Cascade)
+
+
+    @@map("commentReactions")
+}
