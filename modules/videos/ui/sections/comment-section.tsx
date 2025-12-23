@@ -61,6 +61,18 @@ export const CommentsSection = () => {
 		}
 	};
 
+	const removeDeletedComment = (commentId: string) => {
+		// Find the index of the comment where the ID matches
+		const index = allComments!.commentsWithLimit.findIndex((comment) => comment.id === commentId);
+
+		// Check if it was found
+		if (index !== -1) {
+			allComments!.commentsWithLimit?.splice(index, 1);
+		} else {
+			console.log('Comment not found in the list');
+		}
+	};
+
 	useEffect(() => {
 		getAllComments();
 		// return () => {
@@ -79,10 +91,11 @@ export const CommentsSection = () => {
 					{allComments && allComments.commentsWithLimit && allComments.commentsWithLimit.length} Comments
 				</h1>
 				<CommentForm getAllComments={getAllComments} />
+
 				<div className="flex flex-col gap-4 mt-2">
 					{allComments &&
 						allComments.commentsWithLimit?.map((comment, index) => (
-							<CommentItem key={index} comment={comment} />
+							<CommentItem key={index} comment={comment} getAllComments={getAllComments} />
 						))}
 				</div>
 				<InfiniteScroll

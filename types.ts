@@ -50,6 +50,7 @@ export interface CommentFormProps {
 
 export interface CommentDataValue {
 	videoId: string;
+	id: string;
 	userId: string;
 	value: string;
 	user?: User;

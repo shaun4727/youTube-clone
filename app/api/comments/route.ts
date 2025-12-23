@@ -1,4 +1,4 @@
-import { createCommentSchema, getComments } from '@/data/comments';
+import { createCommentSchema, deleteSingleComment, getComments } from '@/data/comments';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -21,6 +21,19 @@ export async function GET(req: Request) {
 		const comments = await getComments(Number(offset));
 
 		return NextResponse.json(comments, { status: 200 });
+	} catch (err) {
+		console.error(err);
+		return NextResponse.json({ error: 'Failed to create video' }, { status: 500 });
+	}
+}
+
+export async function DELETE(req: Request) {
+	try {
+		const { searchParams } = new URL(req.url);
+		const commentId = searchParams.get('id');
+		const deletedComment = await deleteSingleComment(commentId as string);
+
+		return NextResponse.json(deletedComment, { status: 200 });
 	} catch (err) {
 		console.error(err);
 		return NextResponse.json({ error: 'Failed to create video' }, { status: 500 });

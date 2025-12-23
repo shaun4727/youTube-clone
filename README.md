@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   [start from 3:22:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+-   [start from 3:37:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
 
 # to run the project
 
@@ -1878,3 +1878,8 @@ Would you like me to show you how to write the `toggleSubscription` logic for yo
 ## Chapter 23 | Comments Infinite Loading
 
 we will implement has more comment technique here. by clicking on has more, a specific number(eg. 5) of comments will be fetched and merged with comments (just like videos in studio)
+
+-   implemented infinite loading
+-   delete a comment
+
+## Chapter 24 | Comment reactions

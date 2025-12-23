@@ -46,3 +46,18 @@ export const getComments = async (offset: number) => {
 		return null;
 	}
 };
+
+export const deleteSingleComment = async (id: string) => {
+	try {
+		const deletedComment = await prisma.comments.delete({
+			where: {
+				id: id,
+			},
+		});
+
+		return deletedComment;
+	} catch (e) {
+		console.log(e);
+		return null;
+	}
+};
