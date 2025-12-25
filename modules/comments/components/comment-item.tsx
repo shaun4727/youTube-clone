@@ -8,9 +8,10 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuthUI } from '@/context/user-context';
+import { cn } from '@/lib/utils';
 import { CommentDataValue } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
-import { MessageSquareIcon, MoreVerticalIcon, Trash2Icon } from 'lucide-react';
+import { MessageSquareIcon, MoreVerticalIcon, ThumbsDownIcon, ThumbsUpIcon, Trash2Icon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -35,6 +36,7 @@ export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 				},
 			});
 
+			// here (1) indicates to fetch latest 5 comments after deletion happened
 			getAllComments(1);
 			if (resp.status == 200) {
 				toast.success('Comment has been deleted!');
@@ -72,7 +74,18 @@ export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 						</div>
 					</Link>
 					<p className="text-sm">{comment.value}</p>
-					{/* TODO: Comment Reaction */}
+					<div className="flex items-center gap-2 mt-1">
+						<div className="flex items-center">
+							<Button variant="ghost" size="icon" className="size-8" onClick={() => {}}>
+								<ThumbsUpIcon className={cn()} />
+							</Button>
+							<span className="text-xs text-muted-foreground">0</span>
+							<Button variant="ghost" size="icon" className="size-8" onClick={() => {}}>
+								<ThumbsDownIcon className={cn()} />
+							</Button>
+							<span className="text-xs text-muted-foreground">0</span>
+						</div>
+					</div>
 				</div>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
