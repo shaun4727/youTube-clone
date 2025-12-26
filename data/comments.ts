@@ -1,6 +1,7 @@
 import { DEFAULT_LIMIT } from '@/constants';
 import prisma from '@/lib/db';
 import { CommentDataValue } from '@/types';
+import { ReactionType } from './../generated/prisma/enums';
 
 export const createCommentSchema = async ({ videoId, userId, value }: CommentDataValue) => {
 	try {
@@ -24,6 +25,12 @@ export const getComments = async (offset: number) => {
 		const allComments = await prisma.comments.findMany({
 			include: {
 				user: true,
+				commentReaction: {
+					select: {
+						reactionType: true,
+						userId: true,
+					},
+				},
 			},
 			orderBy: {
 				createdAt: 'desc',
@@ -35,7 +42,19 @@ export const getComments = async (offset: number) => {
 		const hasNextPage = allComments.length > DEFAULT_LIMIT;
 
 		// Slice the array to return only the desired limit (5 documents)
-		const commentsWithLimit = allComments.slice(0, DEFAULT_LIMIT);
+		const rawComments = allComments.slice(0, DEFAULT_LIMIT);
+
+		const commentsWithLimit = rawComments.map((comment) => {
+			const likes = comment.commentReaction.filter((c) => c.reactionType === 'like');
+			const dislikes = comment.commentReaction.filter((c) => c.reactionType === 'dislike');
+			const userIds = comment.commentReaction.map((c) => c.userId);
+			return {
+				...comment,
+				likeCount: likes.length,
+				dislikeCount: dislikes.length,
+				userIds,
+			};
+		});
 
 		return {
 			commentsWithLimit,
@@ -59,5 +78,88 @@ export const deleteSingleComment = async (id: string) => {
 	} catch (e) {
 		console.log(e);
 		return null;
+	}
+};
+
+export const createCommentReactionSchema = async (body: {
+	userId: string;
+	commentId: string;
+	reactionType: ReactionType;
+}) => {
+	try {
+		return await prisma.$transaction(async (tx) => {
+			const existingReaction = await tx.commentReactions.findFirst({
+				where: {
+					commentId: body.commentId,
+					userId: body.userId,
+				},
+			});
+
+			if (existingReaction && existingReaction.reactionType === body.reactionType) {
+				return await tx.commentReactions.delete({
+					where: {
+						id: existingReaction.id,
+					},
+				});
+			}
+
+			if (existingReaction && existingReaction.reactionType !== body.reactionType) {
+				await tx.commentReactions.delete({
+					where: {
+						id: existingReaction.id,
+					},
+				});
+			}
+
+			await prisma.commentReactions.create({
+				data: body,
+			});
+		});
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+export const insertVideoReaction = async (reactionPayload: { videoId: string; userId: string; type: ReactionType }) => {
+	try {
+		return await prisma.$transaction(async (tx) => {
+			// 1. Check if the record already exists
+			const existingReaction = await tx.videoReactions.findFirst({
+				where: {
+					videoId: reactionPayload.videoId,
+					userId: reactionPayload.userId,
+				},
+			});
+
+			// 2. If it exists, delete it (The Toggle Off)
+
+			if (existingReaction && existingReaction.reactionType === reactionPayload.type) {
+				return await tx.videoReactions.delete({
+					where: {
+						id: existingReaction.id,
+					},
+				});
+			}
+
+			if (existingReaction && existingReaction.reactionType !== reactionPayload.type) {
+				await tx.videoReactions.delete({
+					where: {
+						id: existingReaction.id,
+					},
+				});
+			}
+
+			// 3. If it doesn't exist, create it (The Toggle On)
+			return await tx.videoReactions.create({
+				data: {
+					videoId: reactionPayload.videoId,
+					userId: reactionPayload.userId,
+					reactionType: reactionPayload.type,
+				},
+			});
+		});
+	} catch (error) {
+		console.error('Failed to toggle reaction:', error);
+		throw error;
 	}
 };

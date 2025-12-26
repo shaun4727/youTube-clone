@@ -8,12 +8,14 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuthUI } from '@/context/user-context';
+import { ReactionType } from '@/generated/prisma/enums';
 import { cn } from '@/lib/utils';
 import { CommentDataValue } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
 import { MessageSquareIcon, MoreVerticalIcon, ThumbsDownIcon, ThumbsUpIcon, Trash2Icon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { toast } from 'sonner';
 
@@ -24,6 +26,17 @@ interface CommentItemProps {
 
 export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 	const { userInfo: user } = useAuthUI();
+
+	const router = useRouter();
+
+	const detectReaction = () => {
+		const reaction = comment.commentReaction?.find((reaction) => reaction.userId === user?.id);
+
+		if (reaction) {
+			return reaction.reactionType;
+		}
+		return null;
+	};
 
 	const deleteComment = async (commentId: string) => {
 		try {
@@ -43,6 +56,31 @@ export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 			} else {
 				toast.error('Comment deletion failed!');
 			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const postReactionTypeData = async (reactionType: ReactionType) => {
+		try {
+			if (!user?.id) {
+				router.push('/sign-in');
+			}
+
+			const formPayload = {
+				commentId: comment.id,
+				userId: user!.id,
+				reactionType: reactionType,
+			};
+			await fetch(`/api/comment-reactions`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formPayload),
+			});
+			// here (1) indicates to fetch latest 5 comments after deletion happened
+			getAllComments(1);
 		} catch (err) {
 			console.log(err);
 		}
@@ -76,14 +114,26 @@ export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 					<p className="text-sm">{comment.value}</p>
 					<div className="flex items-center gap-2 mt-1">
 						<div className="flex items-center">
-							<Button variant="ghost" size="icon" className="size-8" onClick={() => {}}>
-								<ThumbsUpIcon className={cn()} />
+							<Button
+								variant="ghost"
+								size="icon"
+								className="size-8"
+								onClick={() => postReactionTypeData('like')}
+							>
+								<ThumbsUpIcon className={cn('size-5', detectReaction() === 'like' && 'fill-black')} />
 							</Button>
-							<span className="text-xs text-muted-foreground">0</span>
-							<Button variant="ghost" size="icon" className="size-8" onClick={() => {}}>
-								<ThumbsDownIcon className={cn()} />
+							<span className="text-xs text-muted-foreground">{comment.likeCount}</span>
+							<Button
+								variant="ghost"
+								size="icon"
+								className="size-8"
+								onClick={() => postReactionTypeData('dislike')}
+							>
+								<ThumbsDownIcon
+									className={cn('size-5', detectReaction() === 'dislike' && 'fill-black')}
+								/>
 							</Button>
-							<span className="text-xs text-muted-foreground">0</span>
+							<span className="text-xs text-muted-foreground">{comment.dislikeCount}</span>
 						</div>
 					</div>
 				</div>

@@ -61,18 +61,6 @@ export const CommentsSection = () => {
 		}
 	};
 
-	const removeDeletedComment = (commentId: string) => {
-		// Find the index of the comment where the ID matches
-		const index = allComments!.commentsWithLimit.findIndex((comment) => comment.id === commentId);
-
-		// Check if it was found
-		if (index !== -1) {
-			allComments!.commentsWithLimit?.splice(index, 1);
-		} else {
-			console.log('Comment not found in the list');
-		}
-	};
-
 	useEffect(() => {
 		getAllComments();
 		// return () => {

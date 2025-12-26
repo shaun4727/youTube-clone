@@ -55,4 +55,8 @@ export interface CommentDataValue {
 	value: string;
 	user?: User;
 	createdAt?: Date;
+	userIds: string[];
+	likeCount: number;
+	dislikeCount: number;
+	commentReaction: { reactionType: ReactionType; userId: string }[];
 }
