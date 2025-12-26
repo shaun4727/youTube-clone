@@ -195,6 +195,12 @@ model Comments {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
+    // --- New Fields for Threading ---
+    parentId  String?  // Made optional because top-level comments won't have a parent
+    parent    Comments?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
+    replies   Comments[] @relation("CommentToComment")
+    // --------------------------------
+
     user User @relation("UserCommenting",fields: [userId], references: [id],onDelete: Cascade)
 
     videos Video? @relation("VideoOnWhichCommented",fields: [videoId], references: [id],onDelete: Cascade)
