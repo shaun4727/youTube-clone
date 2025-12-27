@@ -78,7 +78,7 @@ export const CommentsSection = () => {
 					{' '}
 					{allComments && allComments.commentsWithLimit && allComments.commentsWithLimit.length} Comments
 				</h1>
-				<CommentForm getAllComments={getAllComments} />
+				<CommentForm variant="comment" getAllComments={getAllComments} />
 
 				<div className="flex flex-col gap-4 mt-2">
 					{allComments &&

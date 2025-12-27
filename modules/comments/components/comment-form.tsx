@@ -15,10 +15,15 @@ import { toast } from 'sonner';
 import z from 'zod';
 
 interface CommentFormProps {
-	getAllComments: (created?: number) => void;
+	getAllComments?: (created?: number) => void;
+	videoId?: string;
+	onSuccess?: () => void;
+	onCancel?: () => void;
+	parentId?: string;
+	variant: 'reply' | 'comment';
 }
 
-export const CommentForm = ({ getAllComments }: CommentFormProps) => {
+export const CommentForm = ({ getAllComments, parentId, onCancel, variant = 'comment' }: CommentFormProps) => {
 	const { userInfo: user } = useAuthUI();
 	const params = useParams();
 	const videoId = params.videoId;
@@ -28,6 +33,7 @@ export const CommentForm = ({ getAllComments }: CommentFormProps) => {
 		resolver: zodResolver(CommentSchema),
 		defaultValues: {
 			value: '',
+			parentId: parentId,
 		},
 	});
 
@@ -45,6 +51,7 @@ export const CommentForm = ({ getAllComments }: CommentFormProps) => {
 			const formPayload = {
 				userId: user?.id,
 				videoId: videoId,
+				parentId: parentId ?? null,
 				...value,
 			};
 
@@ -58,14 +65,20 @@ export const CommentForm = ({ getAllComments }: CommentFormProps) => {
 
 			if (res.status == 200) {
 				form.reset();
-				toastId = toast.success('Video updated successfully!', { id: toastId });
-				getAllComments(1);
+				getAllComments?.(1);
+				onCancel?.();
+				toastId = toast.success('Comment updated successfully!', { id: toastId });
 			} else {
 				toast.error('Video update failed!', { id: toastId });
 			}
 		} catch (err) {
 			console.log(err);
 		}
+	};
+
+	const handleCancel = () => {
+		form.reset();
+		onCancel?.();
 	};
 
 	return (
@@ -90,7 +103,9 @@ export const CommentForm = ({ getAllComments }: CommentFormProps) => {
 									<FormControl>
 										<Textarea
 											{...field}
-											placeholder="Add a comment"
+											placeholder={
+												variant === 'reply' ? 'Reply to this comment...' : 'Add to a comment'
+											}
 											className="resize-none bg-transparent overflow-hidden "
 											rows={10}
 											cols={6}
@@ -102,8 +117,14 @@ export const CommentForm = ({ getAllComments }: CommentFormProps) => {
 						/>
 
 						<div className="justify-end gap-2 mt-2 flex">
+							{onCancel && (
+								<Button variant="ghost" type="button" onClick={handleCancel}>
+									Cancel
+								</Button>
+							)}
+
 							<Button type="submit" size="sm">
-								Comment
+								{variant === 'reply' ? 'Reply' : 'Comment'}
 							</Button>
 						</div>
 					</div>

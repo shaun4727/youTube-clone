@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   [start from 3:54:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+-   [start from 4:31:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
 
 # to run the project
 
@@ -1886,3 +1886,5 @@ we will implement has more comment technique here. by clicking on has more, a sp
 
 -   add like count, dislike count to getComments api,
 -   implement like and dislike as I implemented it on video section
+
+## Chapter 25 | Comment Replies

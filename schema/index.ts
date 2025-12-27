@@ -36,4 +36,5 @@ export const VideoSchemaZod = z.object({
 
 export const CommentSchema = z.object({
 	value: z.string(),
+	parentId: z.string().optional(),
 });

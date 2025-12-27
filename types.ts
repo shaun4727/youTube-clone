@@ -52,11 +52,25 @@ export interface CommentDataValue {
 	videoId: string;
 	id: string;
 	userId: string;
+	_count: { replies: number };
 	value: string;
 	user?: User;
+	parentId?: string;
+	replies: { replies: CommentDataValue[] };
 	createdAt?: Date;
-	userIds: string[];
 	likeCount: number;
 	dislikeCount: number;
 	commentReaction: { reactionType: ReactionType; userId: string }[];
 }
+
+export type ReplyType = {
+	videoId: string;
+	id: string;
+	userId: string;
+	value: string;
+	user?: User;
+	parentId?: string;
+	replies: [];
+	createdAt?: Date;
+	commentReaction: { reactionType: ReactionType; userId: string }[];
+};

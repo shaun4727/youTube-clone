@@ -3,13 +3,14 @@ import prisma from '@/lib/db';
 import { CommentDataValue } from '@/types';
 import { ReactionType } from './../generated/prisma/enums';
 
-export const createCommentSchema = async ({ videoId, userId, value }: CommentDataValue) => {
+export const createCommentSchema = async ({ videoId, userId, value, parentId }: CommentDataValue) => {
 	try {
 		const updatedVideo = await prisma.comments.create({
 			data: {
 				videoId,
 				userId,
 				value,
+				parentId,
 			},
 		});
 
@@ -23,6 +24,9 @@ export const createCommentSchema = async ({ videoId, userId, value }: CommentDat
 export const getComments = async (offset: number) => {
 	try {
 		const allComments = await prisma.comments.findMany({
+			where: {
+				parentId: null,
+			},
 			include: {
 				user: true,
 				commentReaction: {
@@ -30,6 +34,15 @@ export const getComments = async (offset: number) => {
 						reactionType: true,
 						userId: true,
 					},
+				},
+				// replies: {
+				// 	include: {
+				// 		user: true,
+				// 		commentReaction: true,
+				// 	},
+				// },
+				_count: {
+					select: { replies: true },
 				},
 			},
 			orderBy: {
@@ -161,5 +174,56 @@ export const insertVideoReaction = async (reactionPayload: { videoId: string; us
 	} catch (error) {
 		console.error('Failed to toggle reaction:', error);
 		throw error;
+	}
+};
+
+export const getCommentReplies = async (parentId: string, offset: number = 0) => {
+	try {
+		const replies = await prisma.comments.findMany({
+			where: {
+				parentId: parentId,
+			},
+			include: {
+				user: true,
+				commentReaction: {
+					select: {
+						reactionType: true,
+						userId: true,
+					},
+				},
+				// Optional: include count of further nested replies if allowing deep threads
+				_count: {
+					select: { replies: true },
+				},
+			},
+			orderBy: {
+				createdAt: 'asc', // Replies usually flow oldest to newest
+			},
+			take: DEFAULT_LIMIT + 1,
+			skip: offset,
+		});
+
+		const hasNextPage = replies.length > DEFAULT_LIMIT;
+		const rawReplies = replies.slice(0, DEFAULT_LIMIT);
+
+		const formattedReplies = rawReplies.map((reply) => {
+			const likes = reply.commentReaction.filter((r) => r.reactionType === 'like');
+			const dislikes = reply.commentReaction.filter((r) => r.reactionType === 'dislike');
+
+			return {
+				...reply,
+				likeCount: likes.length,
+				dislikeCount: dislikes.length,
+				replyCount: reply._count.replies,
+			};
+		});
+
+		return {
+			replies: formattedReplies,
+			hasNextPage,
+		};
+	} catch (e) {
+		console.error('Error fetching replies:', e);
+		return null;
 	}
 };

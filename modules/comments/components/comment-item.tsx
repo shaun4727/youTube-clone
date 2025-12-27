@@ -12,22 +12,39 @@ import { ReactionType } from '@/generated/prisma/enums';
 import { cn } from '@/lib/utils';
 import { CommentDataValue } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
-import { MessageSquareIcon, MoreVerticalIcon, ThumbsDownIcon, ThumbsUpIcon, Trash2Icon } from 'lucide-react';
+import {
+	ChevronDownIcon,
+	ChevronUpIcon,
+	MessageSquareIcon,
+	MoreVerticalIcon,
+	ThumbsDownIcon,
+	ThumbsUpIcon,
+	Trash2Icon,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 import { toast } from 'sonner';
+import { CommentForm } from './comment-form';
 
 interface CommentItemProps {
 	comment: CommentDataValue;
-	getAllComments: (created?: number) => void;
+	getAllComments?: (created?: number) => void;
+	variant?: 'reply' | 'comment';
 }
 
-export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
+export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: CommentItemProps) => {
 	const { userInfo: user } = useAuthUI();
 
 	const router = useRouter();
+	const [isReplyOpen, setIsReplyOpen] = useState(false);
+	const [isRepliesOpen, setIsRepliesOpen] = useState(false);
+	const [offsetComment, setOffsetComment] = useState<number>(-1);
+    const [commentReplies,setCommentReplies] = useState([]);
+
+	// console.log('comment ', comment);
 
 	const detectReaction = () => {
 		const reaction = comment.commentReaction?.find((reaction) => reaction.userId === user?.id);
@@ -50,7 +67,7 @@ export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 			});
 
 			// here (1) indicates to fetch latest 5 comments after deletion happened
-			getAllComments(1);
+			getAllComments?.(1);
 			if (resp.status == 200) {
 				toast.success('Comment has been deleted!');
 			} else {
@@ -59,6 +76,21 @@ export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 		} catch (err) {
 			console.log(err);
 		}
+	};
+
+	const getCommentReplies = async () => {
+		setOffsetComment(offsetComment + 1);
+		const count = (offsetComment + 1) * 5;
+		const resp = await fetch(`/api/comment-replies?parentId=${comment.id}&offset=${count}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		});
+
+		const replies = await resp.json();
+
+		console.log('replies ', replies);
 	};
 
 	const postReactionTypeData = async (reactionType: ReactionType) => {
@@ -80,10 +112,20 @@ export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 				body: JSON.stringify(formPayload),
 			});
 			// here (1) indicates to fetch latest 5 comments after deletion happened
-			getAllComments(1);
+			getAllComments?.(1);
 		} catch (err) {
 			console.log(err);
 		}
+	};
+
+	const commentReplyMethod = () => {
+		setIsReplyOpen((prevState) => !prevState);
+		getAllComments?.(1);
+	};
+
+	const loadReplies = async () => {
+		await getCommentReplies();
+		setIsRepliesOpen((prev) => !prev);
 	};
 
 	return (
@@ -135,6 +177,11 @@ export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 							</Button>
 							<span className="text-xs text-muted-foreground">{comment.dislikeCount}</span>
 						</div>
+						{variant === 'comment' && (
+							<Button variant="ghost" size="sm" className="h-8" onClick={() => commentReplyMethod()}>
+								Reply
+							</Button>
+						)}
 					</div>
 				</div>
 				<DropdownMenu>
@@ -144,10 +191,13 @@ export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						<DropdownMenuItem onClick={() => {}}>
-							<MessageSquareIcon className="size-4" />
-							Reply
-						</DropdownMenuItem>
+						{variant == 'comment' && (
+							<DropdownMenuItem onClick={() => commentReplyMethod()}>
+								<MessageSquareIcon className="size-4" />
+								Reply
+							</DropdownMenuItem>
+						)}
+
 						{user?.id == comment.userId && (
 							<DropdownMenuItem onClick={() => deleteComment(comment.id)}>
 								<Trash2Icon className="size-4" />
@@ -157,6 +207,36 @@ export const CommentItem = ({ comment, getAllComments }: CommentItemProps) => {
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>
+			{isReplyOpen && variant === 'comment' && (
+				<div className="mt-4 pl-14">
+					<CommentForm
+						videoId={comment.videoId}
+						parentId={comment.id}
+						variant="reply"
+						getAllComments={getAllComments}
+						onCancel={() => setIsReplyOpen(false)}
+						onSuccess={() => {
+							setIsRepliesOpen(true);
+							setIsReplyOpen(false);
+						}}
+					/>
+				</div>
+			)}
+
+			{JSON.stringify(comment)}
+
+			{comment._count.replies > 0 && variant === 'comment' && (
+				<div className="pl-14">
+					<Button variant="tertiary" size="sm" onClick={() => loadReplies()}>
+						{isRepliesOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+						{comment._count.replies} replies{' '}
+					</Button>
+				</div>
+			)}
+
+			{/* {comment._count.replies > 0 && variant === 'comment' && isRepliesOpen && (
+				<CommentReplies parentId={comment.id} videoId={comment.videoId} replies={comment.replies.replies} />
+			)} */}
 		</div>
 	);
 };
