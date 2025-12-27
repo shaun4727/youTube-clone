@@ -28,6 +28,7 @@ import { useState } from 'react';
 
 import { toast } from 'sonner';
 import { CommentForm } from './comment-form';
+import { CommentReplies } from './comment-replies';
 
 interface CommentItemProps {
 	comment: CommentDataValue;
@@ -39,10 +40,13 @@ export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: Co
 	const { userInfo: user } = useAuthUI();
 
 	const router = useRouter();
+	const [offset, setOffset] = useState<number>(0);
 	const [isReplyOpen, setIsReplyOpen] = useState(false);
 	const [isRepliesOpen, setIsRepliesOpen] = useState(false);
-	const [offsetComment, setOffsetComment] = useState<number>(-1);
-    const [commentReplies,setCommentReplies] = useState([]);
+	const [commentReplies, setCommentReplies] = useState<{ replies: CommentDataValue[]; hasNextPage: boolean }>({
+		replies: [],
+		hasNextPage: false,
+	});
 
 	// console.log('comment ', comment);
 
@@ -78,10 +82,16 @@ export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: Co
 		}
 	};
 
-	const getCommentReplies = async () => {
-		setOffsetComment(offsetComment + 1);
-		const count = (offsetComment + 1) * 5;
-		const resp = await fetch(`/api/comment-replies?parentId=${comment.id}&offset=${count}`, {
+	const getCommentReplies = async (parentId: string, initial: number = 0) => {
+		let count;
+		if (initial) {
+			count = 0;
+		} else {
+			setOffset(offset + 1);
+			count = (offset + 1) * 5;
+		}
+
+		const resp = await fetch(`/api/comment-replies?parentId=${parentId}&offset=${count}`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
@@ -90,7 +100,12 @@ export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: Co
 
 		const replies = await resp.json();
 
-		console.log('replies ', replies);
+		setCommentReplies((prev) => {
+			return {
+				replies: [...prev.replies, ...replies.replies],
+				hasNextPage: replies.hasNextPage,
+			};
+		});
 	};
 
 	const postReactionTypeData = async (reactionType: ReactionType) => {
@@ -124,8 +139,9 @@ export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: Co
 	};
 
 	const loadReplies = async () => {
-		await getCommentReplies();
+		await getCommentReplies(comment.id, 1);
 		setIsRepliesOpen((prev) => !prev);
+		setCommentReplies({ replies: [], hasNextPage: false });
 	};
 
 	return (
@@ -223,7 +239,7 @@ export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: Co
 				</div>
 			)}
 
-			{JSON.stringify(comment)}
+			{/* {JSON.stringify(commentReplies)} */}
 
 			{comment._count.replies > 0 && variant === 'comment' && (
 				<div className="pl-14">
@@ -234,9 +250,15 @@ export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: Co
 				</div>
 			)}
 
-			{/* {comment._count.replies > 0 && variant === 'comment' && isRepliesOpen && (
-				<CommentReplies parentId={comment.id} videoId={comment.videoId} replies={comment.replies.replies} />
-			)} */}
+			{comment._count.replies > 0 && variant === 'comment' && isRepliesOpen && (
+				<CommentReplies
+					parentId={comment.id}
+					videoId={comment.videoId}
+					comment={comment}
+					getCommentReplies={getCommentReplies}
+					replies={commentReplies}
+				/>
+			)}
 		</div>
 	);
 };

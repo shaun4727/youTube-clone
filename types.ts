@@ -56,21 +56,9 @@ export interface CommentDataValue {
 	value: string;
 	user?: User;
 	parentId?: string;
-	replies: { replies: CommentDataValue[] };
+	replies: CommentDataValue[];
 	createdAt?: Date;
 	likeCount: number;
 	dislikeCount: number;
 	commentReaction: { reactionType: ReactionType; userId: string }[];
 }
-
-export type ReplyType = {
-	videoId: string;
-	id: string;
-	userId: string;
-	value: string;
-	user?: User;
-	parentId?: string;
-	replies: [];
-	createdAt?: Date;
-	commentReaction: { reactionType: ReactionType; userId: string }[];
-};
