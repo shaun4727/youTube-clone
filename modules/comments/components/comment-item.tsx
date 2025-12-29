@@ -200,6 +200,7 @@ export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: Co
 						)}
 					</div>
 				</div>
+
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button variant="ghost" size="icon" className="size-8 cursor-pointer">
@@ -207,12 +208,10 @@ export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: Co
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent align="end">
-						{variant == 'comment' && (
-							<DropdownMenuItem onClick={() => commentReplyMethod()}>
-								<MessageSquareIcon className="size-4" />
-								Reply
-							</DropdownMenuItem>
-						)}
+						<DropdownMenuItem onClick={() => commentReplyMethod()}>
+							<MessageSquareIcon className="size-4" />
+							Reply
+						</DropdownMenuItem>
 
 						{user?.id == comment.userId && (
 							<DropdownMenuItem onClick={() => deleteComment(comment.id)}>

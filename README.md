@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   [start from 4:47:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+-   [start from 5:15:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
 
 # to run the project
 
@@ -1890,3 +1890,8 @@ we will implement has more comment technique here. by clicking on has more, a sp
 ## Chapter 25 | Comment Replies
 
 ## Chapter 26 | Suggestions
+
+-   load video based on category. if the video doesn't have category load other videos. so check if it is possible for a video to not have a category.
+
+-   class-variance-authority in tailwind.
+-   ---------------------------------------------video has not been attached to category yet. this is pending. fetching video from existing videos which is not equal to current video
