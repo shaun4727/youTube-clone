@@ -1,4 +1,5 @@
 import { SingleVideoTypeWithUser } from '@/types';
+import { VideoGridCard } from '../components/video-grid-card';
 import { VideoRowCard } from '../components/video-row-card';
 
 export const SuggestionsSection = async ({ videoId }: { videoId: string }) => {
@@ -13,10 +14,19 @@ export const SuggestionsSection = async ({ videoId }: { videoId: string }) => {
 	const suggestions = await resp.json();
 
 	return (
-		<div>
-			{suggestions?.suggestedVideos?.map((video: SingleVideoTypeWithUser) => (
-				<VideoRowCard key />
-			))}
-		</div>
+		<>
+			<div className="hidden md:block space-y-3">
+				{suggestions?.suggestedVideos?.map((video: SingleVideoTypeWithUser) => (
+					<VideoRowCard key={video.id} data={video} size="compact" />
+				))}
+			</div>
+			<div className="block md:hidden space-y-10">
+				{suggestions?.suggestedVideos?.map((video: SingleVideoTypeWithUser) => (
+					<VideoGridCard key={video.id} data={video} />
+				))}
+			</div>
+
+			{/* Implement infinite scroll */}
+		</>
 	);
 };

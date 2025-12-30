@@ -1,5 +1,12 @@
+import { Avatar } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+import { UserInfo } from '@/modules/users/ui/components/userInfo';
+import { SingleVideoTypeWithUser } from '@/types';
 import { cva, VariantProps } from 'class-variance-authority';
+import Image from 'next/image';
 import Link from 'next/link';
+import { useMemo } from 'react';
 import { VideoThumbnail } from './video-thumbnail';
 
 const videoRowCardVariants = cva('group flex min-w-0', {
@@ -27,13 +34,7 @@ const thumbnailVariants = cva('relative flex-none', {
 });
 
 interface VideoRowCardProps extends VariantProps<typeof videoRowCardVariants> {
-	data: {
-		id: string;
-		thumbnailUrl: string;
-		previewUrl: string;
-		title: string;
-		duration: number;
-	};
+	data: SingleVideoTypeWithUser;
 	onRemove?: () => void;
 }
 
@@ -42,16 +43,72 @@ export const VideoRowCardSkeleton = () => {
 };
 
 export const VideoRowCard = ({ data, size, onRemove }: VideoRowCardProps) => {
+	const compactViews = useMemo(() => {
+		return Intl.NumberFormat('en', {
+			notation: 'compact',
+		}).format(data._count.videoViews);
+	}, [data._count.videoViews || 0]);
+
+	const compactLikes = useMemo(() => {
+		return Intl.NumberFormat('en', {
+			notation: 'compact',
+		}).format(data.likeCount || 0);
+	}, [data.likeCount]);
+
 	return (
 		<div className={videoRowCardVariants({ size })}>
 			<Link href={`/videos/${data.id}`} className={thumbnailVariants({ size })}>
 				<VideoThumbnail
 					imageUrl={data.thumbnailUrl}
 					previewUrl={data.previewUrl}
-					title={data.title}
+					title={data.name}
 					duration={data.duration}
 				/>
 			</Link>
+
+			{/* Info */}
+			<div className="flex-1 min-w-0">
+				<div className="flex justify-between gap-x-2">
+					<Link href={`/videos/${data.id}`} className="flex-1 min-w-0">
+						<h3 className={cn('font-medium line-clamp-2', size === 'compact' ? 'text-sm' : 'text-base')}>
+							{data.name}
+						</h3>
+
+						{size === 'compact' && (
+							<>
+								<div className="flex items-center gap-2 my-3">
+									<Avatar>
+										<Image
+											src={data.user?.image as string}
+											alt="profile"
+											width={32}
+											height={32}
+											className="rounded-full object-cover"
+										/>
+									</Avatar>
+									<div className="flex flex-col gap-0">
+										<UserInfo size="sm" name={data.user?.name} />
+										<p className="text-xs text-muted-foreground mt-1">
+											{compactViews} views &#8226; {compactLikes} likes{' '}
+										</p>
+									</div>
+								</div>
+
+								<Tooltip>
+									<TooltipTrigger asChild>
+										<p className="text-xs text-muted-foreground w-fit line-clamp-2">
+											{data.description ?? 'No description'}
+										</p>
+									</TooltipTrigger>
+									<TooltipContent side="bottom" align="center" className="bg-black/70">
+										<p>From the video description</p>
+									</TooltipContent>
+								</Tooltip>
+							</>
+						)}
+					</Link>
+				</div>
+			</div>
 		</div>
 	);
 };

@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   [start from 5:15:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+-   [start from 5:35:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
 
 # to run the project
 
@@ -1895,3 +1895,6 @@ we will implement has more comment technique here. by clicking on has more, a sp
 
 -   class-variance-authority in tailwind.
 -   ---------------------------------------------video has not been attached to category yet. this is pending. fetching video from existing videos which is not equal to current video
+-   use of flatmap ( Array.flatmap)
+-   what 'flex-shrink-0' does?
+-   Implement Infinite scroll

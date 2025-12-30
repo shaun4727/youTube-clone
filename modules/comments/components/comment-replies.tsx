@@ -20,6 +20,7 @@ export const CommentReplies = ({ parentId, videoId, replies, comment, getComment
 			<div className="flex flex-col gap-4 mt-2">
 				{/* {replies &&
 					replies?.map((comment) => <CommentItem key={comment.id} comment={comment} variant="reply" />)} */}
+
 				{replies.replies?.map((comment) => (
 					<CommentItem key={comment.id} comment={comment} variant="reply" />
 				))}

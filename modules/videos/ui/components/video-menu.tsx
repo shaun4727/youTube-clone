@@ -16,7 +16,8 @@ interface VideoMenuProps {
 
 // TODO: implement whats left
 export const VideoMenu = ({ videoId, variant, onRemove }: VideoMenuProps) => {
-	const onShare = () => {
+	const onShare = (e: React.MouseEvent<HTMLDivElement>) => {
+		e.stopPropagation();
 		const fullUrl = `${process.env.VERCEL_URL || 'http://localhost:3000'}/videos/${videoId}`;
 
 		navigator.clipboard.writeText(fullUrl);
@@ -30,7 +31,7 @@ export const VideoMenu = ({ videoId, variant, onRemove }: VideoMenuProps) => {
 					<MoreVerticalIcon />
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+			<DropdownMenuContent align="end">
 				<DropdownMenuItem onClick={onShare}>
 					<ShareIcon className="mr-2 size-4" />
 					Share

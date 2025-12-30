@@ -85,6 +85,7 @@ export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: Co
 	const getCommentReplies = async (parentId: string, initial: number = 0) => {
 		let count;
 		if (initial) {
+			setCommentReplies({ replies: [], hasNextPage: false });
 			count = 0;
 		} else {
 			setOffset(offset + 1);
@@ -141,7 +142,6 @@ export const CommentItem = ({ comment, getAllComments, variant = 'comment' }: Co
 	const loadReplies = async () => {
 		await getCommentReplies(comment.id, 1);
 		setIsRepliesOpen((prev) => !prev);
-		setCommentReplies({ replies: [], hasNextPage: false });
 	};
 
 	return (
