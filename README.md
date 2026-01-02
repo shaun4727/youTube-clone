@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   [start from 5:35:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+-   [start from 6:00:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
 
 # to run the project
 
@@ -1898,3 +1898,7 @@ we will implement has more comment technique here. by clicking on has more, a sp
 -   use of flatmap ( Array.flatmap)
 -   what 'flex-shrink-0' does?
 -   Implement Infinite scroll
+
+## Chapter 27 | Search Page
+
+search starts from 06:09:00
