@@ -1,3 +1,5 @@
+import { SearchView } from '@/modules/search/ui/views/search-view';
+
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
@@ -10,11 +12,7 @@ interface PageProps {
 const page = async ({ searchParams }: PageProps) => {
 	const { query, categoryId } = await searchParams;
 
-	return (
-		<div>
-			Searching for {query} in {categoryId}
-		</div>
-	);
+	return <SearchView query={query} categoryId={categoryId} />;
 };
 
 export default page;

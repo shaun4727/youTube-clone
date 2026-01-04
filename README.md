@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   [start from 6:00:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+-   [start from 6:32:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
 
 # to run the project
 

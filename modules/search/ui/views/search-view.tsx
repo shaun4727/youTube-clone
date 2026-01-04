@@ -1,0 +1,15 @@
+import { CategorySection } from '../sections/category-section';
+
+interface PageProps {
+	query: string | undefined;
+	categoryId: string | undefined;
+}
+
+export const SearchView = ({ query, categoryId }: PageProps) => {
+	return (
+		<div className="mx-auto max-w-[1300px] mb-10 flex flex-col gap-y-6 px-4 pt-2.5">
+			<CategorySection categoryId={categoryId} />
+			<ResultsSection query={query} categoryId={categoryId} />
+		</div>
+	);
+};
