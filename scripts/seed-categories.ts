@@ -18,6 +18,8 @@ const categoryNames = [
 	'Pets & Animals',
 ];
 
+// execute this function/ seed categories from package.json
+
 async function main() {
 	console.log('Seeding categories...');
 

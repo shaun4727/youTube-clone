@@ -43,7 +43,12 @@ export type VideoType = {
 	hasNextPage: boolean;
 };
 export type SearchedType = {
-	resultedVideosWithLimit: SingleVideoType[];
+	resultedVideosWithLimit: SingleVideoTypeWithUser[];
+	hasNextPage: boolean;
+};
+
+export type HomeVideoType = {
+	homeVideosWithLimit: SingleVideoTypeWithUser[];
 	hasNextPage: boolean;
 };
 

@@ -1,20 +1,12 @@
 import { DEFAULT_LIMIT } from '@/constants';
 import prisma from '@/lib/db';
 
-export const getSearchResults = async (offset: number = 0, query?: string, categoryId?: string) => {
+export const getVideosForHomePage = async (offset: number = 0, categoryId: string | undefined) => {
 	try {
-		const resultedVideos = await prisma.video.findMany({
+		const homeVideos = await prisma.video.findMany({
 			where: {
 				// Apply search filter on name or description if query exists
 				...(categoryId ? { categoryId } : {}),
-				...(query
-					? {
-							OR: [
-								{ name: { contains: query, mode: 'insensitive' } },
-								{ description: { contains: query, mode: 'insensitive' } },
-							],
-					  }
-					: {}),
 			},
 			select: {
 				id: true,
@@ -53,15 +45,17 @@ export const getSearchResults = async (offset: number = 0, query?: string, categ
 			skip: offset,
 		});
 
-		const hasNextPage = resultedVideos.length > DEFAULT_LIMIT;
-		const resultedVideosWithLimit = resultedVideos.slice(0, DEFAULT_LIMIT);
+		const hasNextPage = homeVideos.length > DEFAULT_LIMIT;
+
+		// Slice the array to return only the desired limit (5 documents)
+		const homeVideosWithLimit = homeVideos.slice(0, DEFAULT_LIMIT);
 
 		return {
-			resultedVideosWithLimit,
+			homeVideosWithLimit,
 			hasNextPage,
 		};
 	} catch (e) {
-		console.error('Error fetching studio files:', e);
+		console.log(e);
 		return null;
 	}
 };
