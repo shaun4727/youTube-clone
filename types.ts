@@ -42,6 +42,10 @@ export type VideoType = {
 	studioVideosWithLimit: SingleVideoType[];
 	hasNextPage: boolean;
 };
+export type SearchedType = {
+	resultedVideosWithLimit: SingleVideoType[];
+	hasNextPage: boolean;
+};
 
 export interface CommentFormProps {
 	videoId: string;

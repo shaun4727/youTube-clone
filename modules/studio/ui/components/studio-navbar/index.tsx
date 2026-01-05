@@ -10,7 +10,7 @@ export const StudioNavbar = () => {
 			<div className="flex items-center gap-4 w-full">
 				<div className="flex items-center shrink-0">
 					<SidebarTrigger />
-					<Link href="/studio">
+					<Link href="/">
 						<div className="p-4 flex items-center gap-1">
 							<Image width={32} height={32} src="/logo/logo.svg" alt="clone-logo" />
 							<p>Studio </p>

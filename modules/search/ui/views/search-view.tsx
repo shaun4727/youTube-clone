@@ -1,4 +1,5 @@
 import { CategorySection } from '../sections/category-section';
+import { ResultsSection } from '../sections/results-section';
 
 interface PageProps {
 	query: string | undefined;
