@@ -1,3 +1,4 @@
+import { DEFAULT_LIMIT } from '@/constants';
 import prisma from '@/lib/db';
 
 export const createSubscriptions = async (subscriptionPayload: { viewerId: string; creatorId: string }) => {
@@ -68,5 +69,70 @@ export const subscriptionProcessCreation = async (subscriptionPayload: { viewerI
 	} catch (error) {
 		console.error('Failed to create subscription:', error);
 		throw error;
+	}
+};
+
+export const getVideosForSubscriptionPage = async (viewerId: string, offset: number = 0) => {
+	try {
+		const subscriptionVideos = await prisma.video.findMany({
+			where: {
+				user: {
+					subscribers: {
+						some: {
+							viewerId: viewerId,
+						},
+					},
+				},
+			},
+			select: {
+				id: true,
+				name: true,
+				description: true,
+				categoryId: true,
+				thumbnailUrl: true,
+				duration: true,
+				previewUrl: true,
+				muxStatus: true,
+				createdAt: true,
+				visibility: true,
+				muxPlaybackId: true,
+				muxTrackStatus: true,
+				thumbnailKey: true,
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						image: true,
+					},
+				},
+				_count: {
+					select: {
+						videoViews: true,
+					},
+				},
+			},
+			// Updated orderBy logic here
+			orderBy: {
+				videoViews: {
+					_count: 'desc', // Use 'desc' for most views, 'asc' for least
+				},
+			},
+			take: DEFAULT_LIMIT + 1,
+			skip: offset,
+		});
+
+		const hasNextPage = subscriptionVideos.length > DEFAULT_LIMIT;
+
+		// Slice the array to return only the desired limit (5 documents)
+		const subscribedVideosWithLimit = subscriptionVideos.slice(0, DEFAULT_LIMIT);
+
+		return {
+			subscribedVideosWithLimit,
+			hasNextPage,
+		};
+	} catch (e) {
+		console.log(e);
+		return null;
 	}
 };

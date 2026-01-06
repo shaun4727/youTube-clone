@@ -35,7 +35,7 @@ export const mainSectionItems = [
 	},
 	{
 		title: 'Subscription',
-		url: '/feed/subscription',
+		url: '/subscribed/videos',
 		icon: PlaySquareIcon,
 		auth: true,
 	},
