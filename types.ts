@@ -59,6 +59,14 @@ export type SubscribedVideoType = {
 	subscribedVideosWithLimit: SingleVideoTypeWithUser[];
 	hasNextPage: boolean;
 };
+export type HistoryVideoType = {
+	historyVideosWithLimit: SingleVideoTypeWithUser[];
+	hasNextPage: boolean;
+};
+export type LikedVideoType = {
+	likedVideosWithLimit: SingleVideoTypeWithUser[];
+	hasNextPage: boolean;
+};
 
 export interface CommentFormProps {
 	videoId: string;

@@ -1913,3 +1913,11 @@ search starts from 06:09:00
 -   add default values to Search Input Component
 
 ## Chapter 29 | Home Feed
+
+-   done
+
+## Chapter 30 | Playlists
+
+-   done
+
+## Chapter 31 | Custom Playlist

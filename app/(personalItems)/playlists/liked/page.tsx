@@ -1,5 +1,11 @@
+import { LikedView } from '@/modules/likedVideos/views/liked-view';
+
 const LikedPage = () => {
-	return <div>LikedPage</div>;
+	return (
+		<div>
+			<LikedView />
+		</div>
+	);
 };
 
 export default LikedPage;

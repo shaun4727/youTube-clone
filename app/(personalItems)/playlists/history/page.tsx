@@ -1,5 +1,11 @@
-const HistoryPage = () => {
-	return <div>HistoryPage</div>;
+import { HistoryView } from '@/modules/playlists/views/history-view';
+
+const page = () => {
+	return (
+		<div>
+			<HistoryView />
+		</div>
+	);
 };
 
-export default HistoryPage;
+export default page;
