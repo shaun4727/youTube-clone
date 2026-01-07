@@ -66,6 +66,9 @@ model User {
   //User who reacted on a comment
   commentReacter CommentReactions[] @relation("UserReactedOnComment")
 
+  //users who has created playlist
+  ownsPlaylist Playlists[] @relation("UserCreatedPlaylist")
+
   
 
   @@map("users")
@@ -127,6 +130,9 @@ model Video{
 
     videoViews videoViews[]
     reactionType videoReactions[]
+
+    // Video Belongs To Playlist
+    playlist PlaylistVideos[] @relation("VideoBelongsTo")
 
 
     @@map("videos")
@@ -227,4 +233,38 @@ model CommentReactions{
 
 
     @@map("commentReactions")
+}
+
+model Playlists{
+    id String @id @default(cuid())
+    name String 
+    description String
+    userId String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+
+        // We name the relations so Prisma knows which is which
+    user  User @relation("UserCreatedPlaylist", fields: [userId], references: [id], onDelete: Cascade)
+
+    //playlists contains these videos
+    videos PlaylistVideos[] @relation("PlaylistContainsThisVideo")
+
+
+    @@map("playlists")
+}
+
+model PlaylistVideos {
+    id String @id @default(cuid())
+    playlistId String
+    videoId String
+
+    playlist Playlists @relation("PlaylistContainsThisVideo", fields: [playlistId], references: [id], onDelete: Cascade)
+
+    video Video @relation("VideoBelongsTo", fields: [videoId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("playlistVideos")
 }
