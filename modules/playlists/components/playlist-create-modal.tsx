@@ -12,9 +12,10 @@ import z from 'zod';
 interface PlaylistCreateModalProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	reloadThePage: () => void;
 }
 
-export const PlaylistCreateModal = ({ open, onOpenChange }: PlaylistCreateModalProps) => {
+export const PlaylistCreateModal = ({ open, onOpenChange, reloadThePage }: PlaylistCreateModalProps) => {
 	const { userInfo: user } = useAuthUI();
 
 	const form = useForm<z.infer<typeof PlaylistSchema>>({
@@ -41,6 +42,7 @@ export const PlaylistCreateModal = ({ open, onOpenChange }: PlaylistCreateModalP
 			});
 
 			if (res.status == 200) {
+				reloadThePage();
 				form.reset();
 				toastId = toast.success('Comment updated successfully!', { id: toastId });
 			} else {

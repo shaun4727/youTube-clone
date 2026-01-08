@@ -63,6 +63,19 @@ export type HistoryVideoType = {
 	historyVideosWithLimit: SingleVideoTypeWithUser[];
 	hasNextPage: boolean;
 };
+
+export type PlayListsDataType = {
+	playlistsWithLimit: SingleVideoTypeWithUser[];
+	hasNextPage: boolean;
+};
+
+export type Playlists = {
+	id: string;
+	name: string;
+	description: string;
+	userId: string;
+	videoCount: number;
+};
 export type LikedVideoType = {
 	likedVideosWithLimit: SingleVideoTypeWithUser[];
 	hasNextPage: boolean;
