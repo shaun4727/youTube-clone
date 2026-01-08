@@ -38,3 +38,7 @@ export const CommentSchema = z.object({
 	value: z.string(),
 	parentId: z.string().optional(),
 });
+
+export const PlaylistSchema = z.object({
+	name: z.string(),
+});
