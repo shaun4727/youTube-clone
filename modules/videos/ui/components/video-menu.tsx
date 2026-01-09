@@ -5,7 +5,9 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { PlaylistAddModal } from '@/modules/playlists/components/playlist-add-modal';
 import { ListPlusIcon, MoreVerticalIcon, ShareIcon, Trash2Icon } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 interface VideoMenuProps {
@@ -16,6 +18,7 @@ interface VideoMenuProps {
 
 // TODO: implement whats left
 export const VideoMenu = ({ videoId, variant, onRemove }: VideoMenuProps) => {
+	const [isOpenPlaylistAddModal, setIsOpenPlaylistAddModal] = useState(false);
 	const onShare = (e: React.MouseEvent<HTMLDivElement>) => {
 		e.stopPropagation();
 		const fullUrl = `${process.env.VERCEL_URL || 'http://localhost:3000'}/videos/${videoId}`;
@@ -25,28 +28,35 @@ export const VideoMenu = ({ videoId, variant, onRemove }: VideoMenuProps) => {
 	};
 
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button variant={variant} size="icon" className="rounded-full">
-					<MoreVerticalIcon />
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end">
-				<DropdownMenuItem onClick={onShare}>
-					<ShareIcon className="mr-2 size-4" />
-					Share
-				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => {}}>
-					<ListPlusIcon className="mr-2 size-4" />
-					Add to playlist
-				</DropdownMenuItem>
-				{onRemove && (
-					<DropdownMenuItem onClick={() => {}}>
-						<Trash2Icon className="mr-2 size-4" />
-						Remove
+		<>
+			<PlaylistAddModal
+				open={isOpenPlaylistAddModal}
+				onOpenChange={setIsOpenPlaylistAddModal}
+				videoId={videoId}
+			/>
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<Button variant={variant} size="icon" className="rounded-full">
+						<MoreVerticalIcon />
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="end">
+					<DropdownMenuItem onClick={onShare}>
+						<ShareIcon className="mr-2 size-4" />
+						Share
 					</DropdownMenuItem>
-				)}
-			</DropdownMenuContent>
-		</DropdownMenu>
+					<DropdownMenuItem onClick={() => setIsOpenPlaylistAddModal(true)}>
+						<ListPlusIcon className="mr-2 size-4" />
+						Add to playlist
+					</DropdownMenuItem>
+					{onRemove && (
+						<DropdownMenuItem onClick={() => {}}>
+							<Trash2Icon className="mr-2 size-4" />
+							Remove
+						</DropdownMenuItem>
+					)}
+				</DropdownMenuContent>
+			</DropdownMenu>
+		</>
 	);
 };

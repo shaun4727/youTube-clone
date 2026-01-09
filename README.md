@@ -1,6 +1,6 @@
 -   [youtube clone](https://www.youtube.com/watch?v=ArmPzvHTcfQ&t=26542s)
 
--   [start from 8:07:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
+-   [start from 9:27:00](https://www.youtube.com/watch?v=ig26iRcMavQ&t=3934s) --- currently on going
 
 # to run the project
 
@@ -1921,3 +1921,11 @@ search starts from 06:09:00
 -   done
 
 ## Chapter 31 | Custom Playlist
+
+## Chapter 32 | Populating playlist
+
+-   progressing
+
+## Chapter 33 | Individual Playlist
+
+-   will start next

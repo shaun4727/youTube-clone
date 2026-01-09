@@ -75,6 +75,10 @@ export type Playlists = {
 	description: string;
 	userId: string;
 	videoCount: number;
+	videos: {
+		playlistId: string;
+		videoId: string;
+	}[];
 };
 export type LikedVideoType = {
 	likedVideosWithLimit: SingleVideoTypeWithUser[];
