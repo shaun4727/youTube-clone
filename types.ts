@@ -69,23 +69,33 @@ export type PlayListsDataType = {
 	hasNextPage: boolean;
 };
 
+type playlistVideos = {
+	playlistId: string;
+	videoId: string;
+	existsInthePlaylist?: boolean;
+	video: {
+		thumbnailUrl: string;
+	};
+};
+
 export type Playlists = {
 	id: string;
 	name: string;
 	description: string;
 	userId: string;
 	videoCount: number;
-	videos: {
-		playlistId: string;
-		videoId: string;
-		existsInthePlaylist?: boolean;
-		video: {
-			thumbnailUrl: string;
-		};
-	}[];
+	videos: playlistVideos[];
 };
 export type LikedVideoType = {
 	likedVideosWithLimit: SingleVideoTypeWithUser[];
+	hasNextPage: boolean;
+};
+
+export type individualPlaylist = {
+	playlistInfoWithLimit: {
+		name: string;
+		videos: { video: SingleVideoTypeWithUser }[];
+	};
 	hasNextPage: boolean;
 };
 

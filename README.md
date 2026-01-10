@@ -1928,4 +1928,5 @@ search starts from 06:09:00
 
 ## Chapter 33 | Individual Playlist
 
--   will start next
+-   progressing
+-   delete individual playlist pending
