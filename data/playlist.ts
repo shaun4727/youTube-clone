@@ -25,7 +25,11 @@ export const getPlaylistMethod = async (userId: string) => {
 			},
 			include: {
 				// This matches the field name in your Playlists model
-				videos: true,
+				videos: {
+					include: {
+						video: true,
+					},
+				},
 			},
 			orderBy: {
 				createdAt: 'desc',

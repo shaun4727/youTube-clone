@@ -9,7 +9,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2Icon, SquareCheckIcon, SquareIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import z from 'zod';
 
 interface PlaylistAddModalProps {
@@ -22,6 +21,7 @@ interface PlaylistAddModalProps {
 export const PlaylistAddModal = ({ open, onOpenChange, reloadThePage, videoId }: PlaylistAddModalProps) => {
 	const { userInfo: user } = useAuthUI();
 	const [isLoading, setIsLoading] = useState(false);
+	const [loadingFrom, setIsLoadingFrom] = useState(false);
 	const [Playlist, setPlayList] = useState<Playlists[]>([]);
 
 	const form = useForm<z.infer<typeof PlaylistSchema>>({
@@ -44,16 +44,23 @@ export const PlaylistAddModal = ({ open, onOpenChange, reloadThePage, videoId }:
 			setIsLoading(false);
 
 			const response = await res.json();
-
-			console.log('playlist ', response);
-
 			setPlayList(response);
 		} catch (err) {
 			console.log(err);
 		}
 	};
 
-	const checkIFVideoExistsInthePlaylist = (playlist: Playlists) => {};
+	const checkIFVideoExistsInthePlaylist = (playlist: Playlists) => {
+		let found = false;
+
+		playlist.videos.forEach((item) => {
+			if (item.videoId === videoId) {
+				found = true;
+			}
+		});
+
+		return found;
+	};
 
 	const addOrRemoveFromPlaylist = async (playlist: Playlists) => {
 		try {
@@ -68,6 +75,9 @@ export const PlaylistAddModal = ({ open, onOpenChange, reloadThePage, videoId }:
 				},
 				body: JSON.stringify(payload),
 			});
+
+			setIsLoadingFrom(true);
+			await getPlaylists();
 		} catch (err) {
 			console.log(err);
 		}
@@ -77,38 +87,10 @@ export const PlaylistAddModal = ({ open, onOpenChange, reloadThePage, videoId }:
 		getPlaylists();
 	}, [user]);
 
-	const submitPlaylistData = async (value: z.infer<typeof PlaylistSchema>) => {
-		try {
-			let toastId: string | number = '1';
-			const formPayload = {
-				userId: user?.id,
-				name: value.name,
-			};
-
-			const res = await fetch('/api/playlist-api', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(formPayload),
-			});
-
-			if (res.status == 200) {
-				reloadThePage?.();
-				form.reset();
-				toastId = toast.success('Comment updated successfully!', { id: toastId });
-			} else {
-				toast.error('Playlist creation failed!', { id: toastId });
-			}
-		} catch (err) {
-			console.log(err);
-		}
-	};
-
 	return (
 		<ResponsiveModal title="Add to playlist" open={open} onOpenChange={onOpenChange}>
 			<div className="flex flex-col gap-2">
-				{isLoading && (
+				{isLoading && !loadingFrom && (
 					<div className="flex justify-center p-4">
 						<Loader2Icon className="size-5 animate-spin text-muted-foreground" />
 					</div>
@@ -122,7 +104,11 @@ export const PlaylistAddModal = ({ open, onOpenChange, reloadThePage, videoId }:
 						size="lg"
 						onClick={() => addOrRemoveFromPlaylist(item)}
 					>
-						{isLoading ? <SquareCheckIcon className="mr-2" /> : <SquareIcon className="mr-2" />}
+						{checkIFVideoExistsInthePlaylist(item) ? (
+							<SquareCheckIcon className="mr-2" />
+						) : (
+							<SquareIcon className="mr-2" />
+						)}
 						{item?.name}
 					</Button>
 				))}

@@ -4,8 +4,8 @@ import Image from 'next/image';
 import { useMemo } from 'react';
 
 interface PlaylistThumbnailProps {
-	title: string;
-	videoCount: number;
+	title: string | undefined;
+	videoCount: number | undefined;
 	className?: string;
 	imageUrl?: string | null;
 }
@@ -28,7 +28,7 @@ export const PlaylistThumbnail = ({ title, videoCount, className, imageUrl }: Pl
 				<div className="relative overflow-hidden w-full rounded-xl aspect-video">
 					<Image
 						src={imageUrl || '/logo/placeholder.svg'}
-						alt={title}
+						alt={title ?? ''}
 						className="w-full h-full object-cover"
 						fill
 					/>

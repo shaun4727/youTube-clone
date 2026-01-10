@@ -78,6 +78,10 @@ export type Playlists = {
 	videos: {
 		playlistId: string;
 		videoId: string;
+		existsInthePlaylist?: boolean;
+		video: {
+			thumbnailUrl: string;
+		};
 	}[];
 };
 export type LikedVideoType = {
