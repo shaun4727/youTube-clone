@@ -7,6 +7,7 @@ import { cva, VariantProps } from 'class-variance-authority';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo } from 'react';
+import { VideoMenu } from './video-menu';
 import { VideoThumbnail } from './video-thumbnail';
 
 const videoRowCardVariants = cva('group flex min-w-0', {
@@ -35,7 +36,7 @@ const thumbnailVariants = cva('relative flex-none', {
 
 interface VideoRowCardProps extends VariantProps<typeof videoRowCardVariants> {
 	data: SingleVideoTypeWithUser;
-	onRemove?: () => void;
+	onRemove?: (e: React.MouseEvent<HTMLDivElement>, videoId: string) => void;
 }
 
 export const VideoRowCardSkeleton = () => {
@@ -91,6 +92,9 @@ export const VideoRowCard = ({ data, size, onRemove }: VideoRowCardProps) => {
 										<p className="text-xs text-muted-foreground mt-1">
 											{compactViews} views &#8226; {compactLikes} likes{' '}
 										</p>
+									</div>
+									<div className="shrink-0 flex justify-end w-3/4">
+										<VideoMenu videoId={data.id} onRemove={onRemove} variant="ghost" />
 									</div>
 								</div>
 

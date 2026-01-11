@@ -1,4 +1,5 @@
-import { ReactionType, VideoVisibility } from './generated/prisma/enums';
+import { ReactionType } from '@/generated/prisma/enums';
+import { VideoVisibility } from './generated/prisma/enums';
 
 export type SingleVideoType = {
 	id: string;
@@ -15,6 +16,8 @@ export type SingleVideoType = {
 	muxTrackStatus: string;
 	_count: {
 		videoViews: number;
+		ReactionType: number;
+		VideoCommented: number;
 	};
 	likeCount: number;
 	dislikeCount: number;

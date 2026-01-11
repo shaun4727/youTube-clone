@@ -89,7 +89,7 @@ export const VideosSection = () => {
 			setLoadingState(false);
 
 			const result = await res.json();
-
+			console.log('studio ', result);
 			setStudioVid((prevRes) => {
 				if (!prevRes.studioVideosWithLimit.length) {
 					return result;
@@ -201,13 +201,13 @@ export const VideosSection = () => {
 											{format(new Date(item.createdAt), 'd MMM yyyy')}
 										</TableCell>
 										<TableCell className="text-right">
-											<span className="w-12 ml-auto">Views</span>
+											<span className="w-12 ml-auto">{item._count.videoViews || 0}</span>
 										</TableCell>
 										<TableCell className="text-right">
-											<span className="w-12 ml-auto">Comments</span>
+											<span className="w-12 ml-auto">{item._count.VideoCommented || 0}</span>
 										</TableCell>
 										<TableCell className="text-center">
-											<span className="w-12 ml-auto">Likes</span>
+											<span className="w-12 ml-auto">{item.likeCount || 0}</span>
 										</TableCell>
 									</TableRow>
 								))}

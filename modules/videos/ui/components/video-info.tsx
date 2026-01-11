@@ -9,7 +9,7 @@ import { VideoMenu } from './video-menu';
 
 interface VideoInfoProps {
 	data: SingleVideoTypeWithUser;
-	onRemove?: () => void;
+	onRemove?: (e: React.MouseEvent<HTMLDivElement>, videoId: string) => void;
 }
 
 export const VideoInfo = ({ data, onRemove }: VideoInfoProps) => {
@@ -53,7 +53,7 @@ export const VideoInfo = ({ data, onRemove }: VideoInfoProps) => {
 				</Link>
 			</div>
 			<div className="shrink-0">
-				<VideoMenu videoId={data.id} onRemove={onRemove} />
+				<VideoMenu videoId={data.id} onRemove={onRemove} variant="ghost" />
 			</div>
 		</div>
 	);

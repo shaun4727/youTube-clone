@@ -160,3 +160,20 @@ export const deleteIndividualPlaylistInfo = async (playlistId: string) => {
 		console.log(err);
 	}
 };
+
+export const deleteVideoFromIndividualPlaylistInfo = async (videoId: string, playlistId: string) => {
+	try {
+		const deletedRecord = await prisma.playlistVideos.delete({
+			where: {
+				// This matches the @@unique constraint in your model
+				playlistId_videoId: {
+					playlistId: playlistId,
+					videoId: videoId,
+				},
+			},
+		});
+		return deletedRecord;
+	} catch (error: any) {
+		console.error('Delete Error:', error);
+	}
+};

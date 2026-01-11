@@ -5,7 +5,7 @@ import { VideoThumbnail } from './video-thumbnail';
 
 interface VideoGridCardProps {
 	data: SingleVideoTypeWithUser;
-	onRemove?: () => void;
+	onRemove?: (e: React.MouseEvent<HTMLDivElement>, videoId: string) => void;
 }
 
 export const VideoGridCard = ({ data, onRemove }: VideoGridCardProps) => {

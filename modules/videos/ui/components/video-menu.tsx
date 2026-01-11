@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 interface VideoMenuProps {
 	videoId: string;
 	variant?: 'ghost' | 'secondary';
-	onRemove?: () => void;
+	onRemove?: (e: React.MouseEvent<HTMLDivElement>, videoId: string) => void;
 }
 
 // TODO: implement whats left
@@ -50,7 +50,7 @@ export const VideoMenu = ({ videoId, variant, onRemove }: VideoMenuProps) => {
 						Add to playlist
 					</DropdownMenuItem>
 					{onRemove && (
-						<DropdownMenuItem onClick={() => {}}>
+						<DropdownMenuItem onClick={(e) => onRemove(e, videoId)}>
 							<Trash2Icon className="mr-2 size-4" />
 							Remove
 						</DropdownMenuItem>

@@ -24,15 +24,54 @@ export const getStudioFiles = async (id: string, offset: number = 0) => {
 				muxPlaybackId: true,
 				muxTrackStatus: true,
 				thumbnailKey: true,
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						image: true,
+					},
+				},
+				_count: {
+					select: {
+						videoViews: true,
+						reactionType: true,
+						VideoCommented: true,
+					},
+				},
 			},
 			take: DEFAULT_LIMIT + 1,
 			skip: offset,
 		});
 
+		// Fetch the "Like" count separately using the specific condition
+		const likeCount = await prisma.videoReactions.count({
+			where: {
+				videoId: id,
+				reactionType: 'like', // Ensure this matches your ReactionType Enum casing
+			},
+		});
+
+		// Fetch the "Dislike" count if needed
+		const dislikeCount = await prisma.videoReactions.count({
+			where: {
+				videoId: id,
+				reactionType: 'dislike',
+			},
+		});
+
 		const hasNextPage = studioVideos.length > DEFAULT_LIMIT;
 
 		// Slice the array to return only the desired limit (5 documents)
-		const studioVideosWithLimit = studioVideos.slice(0, DEFAULT_LIMIT);
+		const studioVideosWithLimit = studioVideos
+			?.map((video) => {
+				return {
+					...video,
+					likeCount,
+					dislikeCount,
+				};
+			})
+			.slice(0, DEFAULT_LIMIT);
 
 		return {
 			studioVideosWithLimit,

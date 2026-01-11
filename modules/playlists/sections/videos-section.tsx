@@ -6,10 +6,11 @@ import { VideoGridCard } from '@/modules/videos/ui/components/video-grid-card';
 import { VideoRowCard } from '@/modules/videos/ui/components/video-row-card';
 import { individualPlaylist } from '@/types';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface VideosSectionProps {
 	playlistInfo: individualPlaylist;
-	getIndividualPlaylistInfo: (offset: number) => void;
+	getIndividualPlaylistInfo: (offset?: number) => void;
 	isLoading: boolean;
 }
 
@@ -21,18 +22,42 @@ export const VideosSection = ({ playlistInfo, getIndividualPlaylistInfo, isLoadi
 		getIndividualPlaylistInfo(offset * 5);
 	};
 
+	const removeVideoFromPlaylist = async (e: React.MouseEvent<HTMLDivElement>, videoId: string) => {
+		e.preventDefault();
+		try {
+			const res = await fetch(
+				`/api/playlist-api?videoId=${videoId}&playlistId=${playlistInfo.playlistInfoWithLimit.id}`,
+				{
+					method: 'DELETE',
+				},
+			);
+
+			if (res.status == 200) {
+				getIndividualPlaylistInfo();
+				toast.success('Video deleted successfully!', { id: 1 });
+			}
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
 	return (
 		<>
 			{!isLoading ? (
 				<>
 					<div className="flex flex-col gap-4 gap-y-10 md:hidden">
 						{playlistInfo.playlistInfoWithLimit?.videos.map((video) => (
-							<VideoGridCard key={video.video.id} data={video.video} />
+							<VideoGridCard key={video.video.id} data={video.video} onRemove={removeVideoFromPlaylist} />
 						))}
 					</div>
 					<div className="hidden flex-col gap-4 md:flex">
 						{playlistInfo.playlistInfoWithLimit?.videos.map((video) => (
-							<VideoRowCard key={video.video.id} data={video.video} size="compact" />
+							<VideoRowCard
+								key={video.video.id}
+								data={video.video}
+								size="compact"
+								onRemove={removeVideoFromPlaylist}
+							/>
 						))}
 					</div>
 					<InfiniteScroll

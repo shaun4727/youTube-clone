@@ -1,4 +1,4 @@
-import { createPlaylistMethod, getPlaylistMethod } from '@/data/playlist';
+import { createPlaylistMethod, deleteVideoFromIndividualPlaylistInfo, getPlaylistMethod } from '@/data/playlist';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -21,6 +21,21 @@ export async function GET(req: Request) {
 
 		const playlists = await getPlaylistMethod(userId as string);
 		return NextResponse.json(playlists, { status: 200 });
+	} catch (error) {
+		return NextResponse.json({ error: 'Failed to load categories' }, { status: 500 });
+	}
+}
+
+export async function DELETE(req: Request) {
+	try {
+		const { searchParams } = new URL(req.url);
+		const playlistId = searchParams.get('playlistId');
+		const videoId = searchParams.get('videoId');
+		if (!videoId || !playlistId) {
+			return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
+		}
+		const res = await deleteVideoFromIndividualPlaylistInfo(videoId, playlistId as string);
+		return NextResponse.json(res, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ error: 'Failed to load categories' }, { status: 500 });
 	}
