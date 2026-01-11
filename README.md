@@ -1929,4 +1929,4 @@ search starts from 06:09:00
 ## Chapter 33 | Individual Playlist
 
 -   progressing
--   delete individual playlist pending
+-   delete individual playlist done
