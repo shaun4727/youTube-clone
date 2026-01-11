@@ -26,12 +26,12 @@ export const VideosSection = ({ playlistInfo, getIndividualPlaylistInfo, isLoadi
 			{!isLoading ? (
 				<>
 					<div className="flex flex-col gap-4 gap-y-10 md:hidden">
-						{playlistInfo.playlistInfoWithLimit.videos.map((video) => (
+						{playlistInfo.playlistInfoWithLimit?.videos.map((video) => (
 							<VideoGridCard key={video.video.id} data={video.video} />
 						))}
 					</div>
 					<div className="hidden flex-col gap-4 md:flex">
-						{playlistInfo.playlistInfoWithLimit.videos.map((video) => (
+						{playlistInfo.playlistInfoWithLimit?.videos.map((video) => (
 							<VideoRowCard key={video.video.id} data={video.video} size="compact" />
 						))}
 					</div>

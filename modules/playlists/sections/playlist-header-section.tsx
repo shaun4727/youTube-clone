@@ -7,16 +7,17 @@ import { Trash2Icon } from 'lucide-react';
 
 interface PlaylistHeaderSection {
 	playlistInfo: individualPlaylist;
+	removePlaylistMethod: () => Promise<void>;
 }
 
-export const PlaylistHeaderSection = ({ playlistInfo }: PlaylistHeaderSection) => {
-	const removePlaylist = () => {
-		console.log('remove playlist');
+export const PlaylistHeaderSection = ({ playlistInfo, removePlaylistMethod }: PlaylistHeaderSection) => {
+	const removePlaylist = async () => {
+		await removePlaylistMethod();
 	};
 	return (
 		<div className="flex justify-between items-center">
 			<div>
-				<h1 className="text-2xl font-bold">{playlistInfo?.playlistInfoWithLimit.name}</h1>
+				<h1 className="text-2xl font-bold">{playlistInfo?.playlistInfoWithLimit?.name}</h1>
 				<p className="text-xs text-muted-foreground">Videos from Playlist</p>
 			</div>
 

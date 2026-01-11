@@ -85,6 +85,7 @@ export const getIndividualPlaylistInfo = async (playlistId: string, offset: numb
 				id: playlistId, // Optimized: findUnique by Primary Key
 			},
 			select: {
+				id: true,
 				name: true,
 				videos: {
 					// Database-level pagination
@@ -144,5 +145,18 @@ export const getIndividualPlaylistInfo = async (playlistId: string, offset: numb
 	} catch (err) {
 		console.error('Error fetching playlist:', err);
 		throw err;
+	}
+};
+
+export const deleteIndividualPlaylistInfo = async (playlistId: string) => {
+	try {
+		const res = await prisma.playlists.delete({
+			where: {
+				id: playlistId,
+			},
+		});
+		return res;
+	} catch (err) {
+		console.log(err);
 	}
 };

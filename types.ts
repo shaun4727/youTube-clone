@@ -94,6 +94,7 @@ export type LikedVideoType = {
 export type individualPlaylist = {
 	playlistInfoWithLimit: {
 		name: string;
+		id?: string;
 		videos: { video: SingleVideoTypeWithUser }[];
 	};
 	hasNextPage: boolean;

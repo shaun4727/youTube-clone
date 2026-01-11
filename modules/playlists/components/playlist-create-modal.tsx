@@ -54,7 +54,7 @@ export const PlaylistCreateModal = ({ open, onOpenChange, reloadThePage }: Playl
 	};
 
 	return (
-		<ResponsiveModal title="Upload a thumbnail" open={open} onOpenChange={onOpenChange}>
+		<ResponsiveModal title="Create a playlist" open={open} onOpenChange={onOpenChange}>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(submitPlaylistData)}>
 					<FormField
