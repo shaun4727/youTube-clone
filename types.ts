@@ -29,12 +29,19 @@ export type User = {
 	name?: string | null;
 	image?: string | null;
 	email?: string | null;
+	bannerUrl?: string | null;
+	bannerKey?: string | null;
 	subscriptions: {
 		createdAt: Date;
 		updatedAt: Date;
 		viewerId: string;
 		creatorId: string;
 	}[];
+	_count: {
+		videos: number;
+		subscribers: number;
+		following: number;
+	};
 };
 
 export interface SingleVideoTypeWithUser extends SingleVideoType {
@@ -52,6 +59,10 @@ export type SearchedType = {
 
 export type HomeVideoType = {
 	homeVideosWithLimit: SingleVideoTypeWithUser[];
+	hasNextPage: boolean;
+};
+export type UserVideoType = {
+	userVideosWithLimit: SingleVideoTypeWithUser[];
 	hasNextPage: boolean;
 };
 export type TrendingVideoType = {

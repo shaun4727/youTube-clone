@@ -1,17 +1,15 @@
 import { SidebarHeader, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCurrentUser } from '@/hooks/use-current-user';
+import { useAuthUI } from '@/context/user-context';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 
 export const StudioSidebarHeader = () => {
-	const [user, setUser] = useState<ReturnType<typeof useCurrentUser>>(undefined);
-	const data = useCurrentUser();
+	const { userInfo } = useAuthUI();
 
 	const { state } = useSidebar();
 
-	if (!data)
+	if (!userInfo)
 		return (
 			<SidebarHeader className="flex items-center justify-center pb-4">
 				<Skeleton className="h-4 w-20" />
@@ -21,10 +19,6 @@ export const StudioSidebarHeader = () => {
 				</div>
 			</SidebarHeader>
 		);
-
-	useEffect(() => {
-		setUser(data);
-	}, [data]);
 
 	if (state === 'collapsed') {
 		return (
@@ -45,9 +39,9 @@ export const StudioSidebarHeader = () => {
 	return (
 		<SidebarHeader className="flex items-center justify-center pb-4">
 			<Link href="/users/current">
-				{user && user.image && (
+				{userInfo && userInfo.image && (
 					<Image
-						src={user.image}
+						src={userInfo.image}
 						alt="avatar"
 						width="110"
 						height="110"
@@ -58,7 +52,7 @@ export const StudioSidebarHeader = () => {
 			</Link>
 			<div>
 				<p className="text-sm font-medium">Your profile</p>
-				<p className="text-xs text-muted-foreground">{user?.name || ''}</p>
+				<p className="text-xs text-muted-foreground">{userInfo?.name || ''}</p>
 			</div>
 		</SidebarHeader>
 	);
