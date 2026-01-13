@@ -1934,3 +1934,5 @@ search starts from 06:09:00
 ## Chapter 34 | User Page
 
 -   done
+
+## Chapter 35 | Banner Upload

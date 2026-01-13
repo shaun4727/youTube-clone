@@ -12,9 +12,9 @@ interface UserSectionProps {
 export const UserSection = ({ userId }: UserSectionProps) => {
 	const [userInfo, setUserInfo] = useState<User>();
 
-	const getUserDataWithId = async () => {
+	const getUserDataWithId = async (userID: string | null | undefined) => {
 		try {
-			const response = await fetch(`/api/user-information?userId=${userId}`, {
+			const response = await fetch(`/api/user-information?userId=${userID}`, {
 				method: 'GET',
 			});
 			const result = await response.json();
@@ -27,7 +27,7 @@ export const UserSection = ({ userId }: UserSectionProps) => {
 	};
 
 	useEffect(() => {
-		getUserDataWithId();
+		getUserDataWithId(userId);
 	}, [userId]);
 
 	return (
@@ -35,7 +35,7 @@ export const UserSection = ({ userId }: UserSectionProps) => {
 			{/* <pre> {JSON.stringify(userInfo, null, 2)} </pre> */}
 			{userInfo && (
 				<>
-					<UserPageBanner user={userInfo} />
+					<UserPageBanner user={userInfo} getUserData={getUserDataWithId} />
 					<UserPageInfo user={userInfo} />
 				</>
 			)}
