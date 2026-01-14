@@ -136,3 +136,39 @@ export const getVideosForSubscriptionPage = async (viewerId: string, offset: num
 		return null;
 	}
 };
+
+export const getSubscriptionsList = async (userId: string, offset: number) => {
+	const subscriptionList = await prisma.subscription.findMany({
+		where: {
+			viewerId: userId,
+		},
+		select: {
+			creatorId: true,
+			viewerId: true,
+			creator: true,
+		},
+		take: DEFAULT_LIMIT + 1,
+		skip: offset,
+	});
+
+	const hasNextPage = subscriptionList.length > DEFAULT_LIMIT;
+	const subscriptionsListWithLimit = subscriptionList.slice(0, DEFAULT_LIMIT);
+
+	return {
+		subscriptionsListWithLimit,
+		hasNextPage,
+	};
+};
+
+export const checkIfUserSubscribed = async (viewerId: string, creatorId: string) => {
+	const count = await prisma.subscription.count({
+		where: {
+			viewerId: viewerId,
+			creatorId: creatorId,
+		},
+	});
+
+	const isSubscribed = count > 0;
+
+	return isSubscribed;
+};

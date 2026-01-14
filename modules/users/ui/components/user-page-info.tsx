@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { useAuthUI } from '@/context/user-context';
 import { SubscriptionButton } from '@/modules/subscriptions/ui/components/subscription-button';
@@ -5,7 +7,8 @@ import { User } from '@/types';
 import { Avatar } from '@radix-ui/react-avatar';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface UserPageInfoProps {
 	user: User | undefined;
@@ -13,6 +16,7 @@ interface UserPageInfoProps {
 
 export const UserPageInfo = ({ user }: UserPageInfoProps) => {
 	const { userInfo: AuthUser } = useAuthUI();
+	const router = useRouter();
 
 	const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
 
@@ -30,18 +34,39 @@ export const UserPageInfo = ({ user }: UserPageInfoProps) => {
 				body: JSON.stringify(formPayload),
 			});
 			const result = await res.json();
+
 			if (res.status == 200) {
 				if (result) {
 					setIsSubscribed(true);
 				} else {
 					setIsSubscribed(false);
 				}
+				router.refresh();
 			}
 		} catch (err) {
 			console.log(err);
 			return null;
 		}
 	};
+	const ifUserSubscribedMethod = async () => {
+		try {
+			const res = await fetch(`/api/check-if-subscribed?userId=${AuthUser?.id}&creatorId=${user?.id}`, {
+				method: 'GET',
+			});
+			const result = await res.json();
+
+			if (res.status == 200) {
+				setIsSubscribed(result);
+			}
+		} catch (err) {
+			console.log(err);
+			return null;
+		}
+	};
+
+	useEffect(() => {
+		ifUserSubscribedMethod();
+	}, [user, AuthUser]);
 
 	return (
 		<div className="py-6">

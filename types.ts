@@ -44,6 +44,36 @@ export type User = {
 	};
 };
 
+export type Subscription = {
+	viewer: User;
+	creator: User;
+	viewerId: string;
+	creatorId: string;
+	createdAt: Date;
+	updatedAt: Date;
+};
+
+export interface SubscriptionWithCreator {
+	id: string;
+	viewerId: string;
+	creatorId: string;
+	createdAt: Date; // Note: Use Date if you parse it, string if it's raw JSON
+	updatedAt: Date;
+	creator: {
+		id: string;
+		name: string | null;
+		image: string | null;
+	};
+}
+
+// If you are receiving an array (like in your JSON example)
+type SubscriptionList = SubscriptionWithCreator[];
+
+export type SubscriptionsListType = {
+	subscriptionsListWithLimit: Subscription[];
+	hasNextPage: boolean;
+};
+
 export interface SingleVideoTypeWithUser extends SingleVideoType {
 	user: User | null;
 }

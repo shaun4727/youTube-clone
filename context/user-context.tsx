@@ -15,7 +15,7 @@ const AuthUIContext = createContext<AuthUIContextType | null>(null);
 
 export const AuthUIProvider = ({ children }: { children: React.ReactNode }) => {
 	const user = useCurrentUser();
-	const [userInfo, setUserInfo] = useState<User | undefined>(undefined);
+	const [userInfo, setUserInfo] = useState<User>();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	// console.log('context ', userInfo);
@@ -24,7 +24,7 @@ export const AuthUIProvider = ({ children }: { children: React.ReactNode }) => {
 	// 	router.refresh(); // 🔥 forces session revalidation
 	// }, [router]);
 
-	const getSubscription = async (user: User | undefined) => {
+	const getSubscription = async (user: User) => {
 		try {
 			const res = await fetch(`/api/subscription-section?viewerId=${user?.id}&creatorId=${2}`, {
 				method: 'GET',
@@ -38,7 +38,7 @@ export const AuthUIProvider = ({ children }: { children: React.ReactNode }) => {
 		}
 	};
 
-	const handleUser = async (user: User | undefined) => {
+	const handleUser = async (user: User) => {
 		let subList = [];
 		if (user) {
 			subList = await getSubscription(user);
