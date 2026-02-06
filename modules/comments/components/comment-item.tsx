@@ -8,9 +8,9 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuthUI } from '@/context/user-context';
-import { ReactionType } from '@/generated/prisma/enums';
 import { cn } from '@/lib/utils';
 import { CommentDataValue } from '@/types';
+import { ReactionType } from '@prisma/client';
 import { formatDistanceToNow } from 'date-fns';
 import {
 	ChevronDownIcon,

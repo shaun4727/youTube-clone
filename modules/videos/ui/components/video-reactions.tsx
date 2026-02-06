@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useAuthUI } from '@/context/user-context';
-import { ReactionType } from '@/generated/prisma/enums';
 import { cn } from '@/lib/utils';
+import { ReactionType } from '@prisma/client';
 import { ThumbsDownIcon, ThumbsUpIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';

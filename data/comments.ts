@@ -1,7 +1,7 @@
 import { DEFAULT_LIMIT } from '@/constants';
 import prisma from '@/lib/db';
 import { CommentDataValue } from '@/types';
-import { ReactionType } from './../generated/prisma/enums';
+import { ReactionType } from '@prisma/client';
 
 export const createCommentSchema = async ({ videoId, userId, value, parentId }: CommentDataValue) => {
 	try {

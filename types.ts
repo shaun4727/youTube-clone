@@ -1,5 +1,4 @@
-import { ReactionType } from '@/generated/prisma/enums';
-import { VideoVisibility } from './generated/prisma/enums';
+import { ReactionType, VideoVisibility } from '@prisma/client';
 
 export type SingleVideoType = {
 	id: string;

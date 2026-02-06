@@ -1,7 +1,7 @@
 import { DEFAULT_LIMIT } from '@/constants';
-import { Prisma } from '@/generated/prisma/client';
 import prisma from '@/lib/db';
 import { mux } from '@/lib/mux';
+import { Prisma } from '@prisma/client';
 import { UploadThingError, UTApi } from 'uploadthing/server';
 
 export const getStudioFiles = async (id: string, offset: number = 0) => {

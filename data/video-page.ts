@@ -1,5 +1,5 @@
-import { ReactionType } from '@/generated/prisma/enums';
 import prisma from '@/lib/db';
+import { ReactionType } from '@prisma/client';
 
 export const getVideoInfoWithUser = async (id: string, userId: string) => {
 	try {
