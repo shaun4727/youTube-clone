@@ -3,11 +3,11 @@
 import { InfiniteScroll } from '@/components/infinite-scroll';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { VideoVisibility } from '@/generated/prisma/enums';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { snakeCaseToTitle } from '@/lib/utils';
 import { VideoThumbnail } from '@/modules/videos/ui/components/video-thumbnail';
 import { VideoType } from '@/types';
+import { VideoVisibility } from '@prisma/client';
 import { format } from 'date-fns';
 import { Globe2Icon, LockIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
