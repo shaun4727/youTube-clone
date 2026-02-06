@@ -9,7 +9,8 @@
 		"lint": "eslint",
 		"dev:webhook": "ngrok http 3000",
 		"dev:all": "concurrently \"pnpm run dev\" \"pnpm run dev:webhook\"",
-		"seed": "tsx scripts/seed-categories.ts"
+		"seed": "tsx scripts/seed-categories.ts",
+		"postinstall": "prisma generate"
 	},
 	"dependencies": {
 		"@auth/prisma-adapter": "^2.11.1",
