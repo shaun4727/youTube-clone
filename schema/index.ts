@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { VideoVisibility } from '@/generated/prisma/enums';
+import { VideoVisibility } from '@prisma/client';
 
 const VideoVisibilityEnum = z.enum([VideoVisibility.PRIVATE, VideoVisibility.PUBLIC]);
 

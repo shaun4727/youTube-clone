@@ -32,7 +32,7 @@ export const checkSubscription = async (creatorId: string, viewerId: string) => 
 };
 
 export const totalSubscription = async (viewerId: string) => {
-	return await prisma.subscription.findMany({
+	return await prisma.subscription?.findMany({
 		where: { viewerId },
 	});
 };

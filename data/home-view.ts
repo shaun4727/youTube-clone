@@ -45,10 +45,10 @@ export const getVideosForHomePage = async (offset: number = 0, categoryId: strin
 			skip: offset,
 		});
 
-		const hasNextPage = homeVideos.length > DEFAULT_LIMIT;
+		const hasNextPage = homeVideos?.length > DEFAULT_LIMIT;
 
 		// Slice the array to return only the desired limit (5 documents)
-		const homeVideosWithLimit = homeVideos.slice(0, DEFAULT_LIMIT);
+		const homeVideosWithLimit = homeVideos?.slice(0, DEFAULT_LIMIT);
 
 		return {
 			homeVideosWithLimit,
